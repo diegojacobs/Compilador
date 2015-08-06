@@ -82,6 +82,14 @@ public class Compilador {
         
         String res = aut.toString();
         file.agregar(res);
+        
+        System.out.println("Ingrese su cadena: \n");
+        Scanner input2 = new Scanner(System.in);
+        String exp2 = input2.nextLine();
+        
+        Simulacion simu = new Simulacion(aut.getAuto(),exp2);
+        
+        System.out.println(simu.Simular());
     }
     
 }
