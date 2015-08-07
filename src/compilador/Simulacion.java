@@ -16,7 +16,7 @@ import java.util.Stack;
 public class Simulacion<T> {
     private Automata auto;
     private String exp;
-    private ArrayList<Estado> alcanzados = new ArrayList();
+    private ArrayList<Estado> alcanzados;
     
     public Simulacion(Automata at, String cadena)
     {
@@ -148,10 +148,9 @@ public class Simulacion<T> {
         return  visitados;
     }
     
+    //Revisamos si el alfabeto acepta la cadena ingresada
     public boolean Simular()
     {
-        //Revisamos si el alfabeto contiene la cadena que estamos buscando
-        
         ArrayList<Estado> estados = new ArrayList();
         Estado inicial = auto.getInicio();
         

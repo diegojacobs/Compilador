@@ -23,7 +23,7 @@ public class Compilador {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("Ingrese su expresión regular: \n");
+        System.out.println("Ingrese su expresión regular: ");
         Scanner input = new Scanner(System.in);
         String exp = input.nextLine();
         myPostfix postfix = new myPostfix();
@@ -83,13 +83,25 @@ public class Compilador {
         String res = aut.toString();
         file.agregar(res);
         
-        System.out.println("Ingrese su cadena: \n");
+        System.out.println("Ingrese su cadena: ");
         Scanner input2 = new Scanner(System.in);
         String exp2 = input2.nextLine();
         
         Simulacion simu = new Simulacion(aut.getAuto(),exp2);
         
         System.out.println(simu.Simular());
+        
+        String alfabeto = simbolos.replaceAll(",", "");
+        
+        System.out.println("Alfabeto: "+alfabeto);
+        
+        Subconjunto nuevo = new Subconjunto(aut.getAuto(),alfabeto);
+        
+        nuevo.Construir();
+        
+        String AFD = nuevo.getNewauto().toString();
+        
+        System.out.println(AFD);
     }
     
 }
