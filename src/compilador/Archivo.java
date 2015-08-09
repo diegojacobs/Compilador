@@ -11,16 +11,17 @@ import java.io.*;
  * @author Diego Jacobs 13160
  */
 public class Archivo {
+    private String doc;
     
-    public void Archivo()
+    public Archivo(String txt)
     {
-        
+        this.doc = txt;
     }
     
     public void escribir(String texto)
     {
         File f;
-        f = new File("Resultados.txt");
+        f = new File(doc);
         try{
             FileWriter w = new FileWriter(f);
             
@@ -43,7 +44,7 @@ public class Archivo {
     public void agregar(String texto)
     {
         File f;
-        f = new File("Resultados.txt");
+        f = new File(doc);
         try{
             FileWriter w = new FileWriter(f);
             
