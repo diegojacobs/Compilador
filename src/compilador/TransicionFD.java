@@ -47,6 +47,6 @@ public class TransicionFD {
     @Override
     public String toString()
     {
-        return "(" + origen.getEstados()+ ", " + simb + ", " + destino.getEstados() + ")";
+        return "(" + origen.getId()+ ", " + simb + ", " + destino.getId() + ")";
     }
 }

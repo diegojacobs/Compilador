@@ -23,9 +23,12 @@ public class AutomataFD {
         
     }
     
-    public AutomataFD(EstadoFD ini)
+    public AutomataFD(EstadoFD ini, ArrayList<EstadoFD> end, ArrayList<EstadoFD> estados, String alfa)
     {
         inicio = ini;
+        fin = end;
+        subconjuntos = estados;
+        alfabeto = alfa;
     }
 
     public String getAlfabeto() {
@@ -67,12 +70,12 @@ public class AutomataFD {
     public String toString()
     {
         String res = new String();
-        //res += "ESTADOS = " + estados.toString() + "\n";
-        res += "SIMBOLOS = ["+ this.alfabeto + "]\n";
-        res += "INICIO = " +  inicio + "\n";
+        res += "ESTADOS = " + subconjuntos.toString() + "\n";
+        res += "SIMBOLOS = ["+ alfabeto + "]\n";
+        res += "INICIO = [" +  inicio + "]\n";
         res += "ACEPTACION = " + fin + "\n";
         res += "TRANSICION = ";
-        //res = this.estados.stream().map((est) -> est.getEnlaces()+"-").reduce(res, String::concat);
+        res = this.subconjuntos.stream().map((est) -> est.getEnlaces()+"-").reduce(res, String::concat);
         
         return res;
     }

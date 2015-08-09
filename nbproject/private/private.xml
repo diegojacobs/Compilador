@@ -12,11 +12,14 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/AutomataFD.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Subconjunto.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Compilador.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/EstadoFD.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Transicion.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/TransicionFD.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Automata.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Thompson.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/myPostfix.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Simulacion.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Estado.java</file>
         </group>

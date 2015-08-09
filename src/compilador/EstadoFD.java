@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class EstadoFD {
     private ArrayList<Estado> estados;
     private ArrayList<TransicionFD> enlaces = new ArrayList();
-
+    private int id;
 
     
     public EstadoFD(ArrayList<Estado> num)
@@ -41,11 +41,24 @@ public class EstadoFD {
     public void setEnlace(TransicionFD enlace) {
         this.enlaces.add(enlace);
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     
     @Override
     public String toString()
     {
-        return "{"+this.estados+"}";
+        String states = new String();
+        for (Estado estado : estados) 
+            states += estado.toString()+",";
+        states = states.substring(0, states.length()-1);
+        
+        return this.id+" = {"+states+"}";
     }
     
 }
