@@ -48,32 +48,21 @@ public class SimulacionAFD<T> {
         this.alcanzados.add(alcanzado);
     }
     
-    public ArrayList<EstadoFD> move(ArrayList<EstadoFD> estados, Character c)
+    public EstadoFD move(EstadoFD estado, Character c)
     {
-        ArrayList<EstadoFD> visitados = new ArrayList();
-        Stack<EstadoFD> st = new Stack();
+        EstadoFD visitados = new EstadoFD();
         
-        //Metemos mi conjunto de estados a un stack
-        for (EstadoFD estado : estados)
-            st.push(estado);
-        
-        while (st.size()>0)
+        //Mandamos a traer los enlaces de nuestr estado
+        ArrayList<TransicionFD> enlaces = estado.getEnlaces();
+            
+        for (TransicionFD enlace : enlaces) 
         {
-            EstadoFD estado = st.pop();
-            
-            //Mandamos a traer los enlaces de nuestr estado
-            ArrayList<TransicionFD> enlaces = estado.getEnlaces();
-            
-            for (TransicionFD enlace : enlaces) 
+            if (enlace.getSimbolo() == c)
             {
-                if (enlace.getSimbolo() == c)
-                {
-                    EstadoFD destino = enlace.getDestino();
-                    if (!visitados.contains(destino))
-                        visitados.add(destino);
-                }
+                visitados = enlace.getDestino();
             }
         }
+        
         
         return visitados;
     }
@@ -82,16 +71,22 @@ public class SimulacionAFD<T> {
     //Revisamos si el alfabeto acepta la cadena ingresada
     public boolean SimularFD()
     {
-        ArrayList<EstadoFD> estados = new ArrayList();
-        EstadoFD inicial = auto.getInicio();
-        
-        estados.add(inicial);
+        EstadoFD estados = new EstadoFD(auto.getInicio().getEstados());
+       
+        estados = auto.getInicio();
+        //estados.add(auto.getInicio());
         
         for (Character c : exp.toCharArray())
         {
             estados = move(estados,c);
         }
         
-        return estados.contains(auto.getFin());
+        boolean flag = false;
+        for (EstadoFD fin : auto.getFin()) 
+        {
+            if (estados.equals(fin))
+                flag = true;
+        }
+        return flag;
     }    
 }

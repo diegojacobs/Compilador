@@ -12,11 +12,8 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/AutomataFD.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Subconjunto.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Compilador.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/EstadoFD.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/TransicionFD.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/SimulacionAFD.java</file>
         </group>
     </open-files>

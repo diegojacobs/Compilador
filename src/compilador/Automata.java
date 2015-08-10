@@ -64,10 +64,10 @@ public class Automata {
     public String toString()
     {
         String res = new String();
-        res += "ESTADOS = " + estados.toString() + "\n";
-        res += "SIMBOLOS = ["+ this.alfabeto + "]\n";
-        res += "INICIO = " +  inicio + "\n";
-        res += "ACEPTACION = " + fin + "\n";
+        res += "ESTADOS = " + estados.toString() + "\r\n";
+        res += "SIMBOLOS = ["+ this.alfabeto + "]\r\n";
+        res += "INICIO = " +  inicio + "\r\n";
+        res += "ACEPTACION = " + fin + "\r\n";
         res += "TRANSICION = ";
         res = this.estados.stream().map((est) -> est.getEnlaces()+"-").reduce(res, String::concat);
         

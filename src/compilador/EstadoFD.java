@@ -16,7 +16,10 @@ public class EstadoFD {
     private ArrayList<TransicionFD> enlaces = new ArrayList();
     private int id;
 
-    
+    public EstadoFD()
+    {
+        
+    }
     public EstadoFD(ArrayList<Estado> num)
     {
         this.estados = num;

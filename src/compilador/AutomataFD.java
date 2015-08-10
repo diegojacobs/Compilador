@@ -70,10 +70,10 @@ public class AutomataFD {
     public String toString()
     {
         String res = new String();
-        res += "ESTADOS = " + subconjuntos.toString() + "\n";
-        res += "SIMBOLOS = ["+ alfabeto + "]\n";
-        res += "INICIO = [" +  inicio + "]\n";
-        res += "ACEPTACION = " + fin + "\n";
+        res += "ESTADOS = " + subconjuntos.toString() + "\r\n";
+        res += "SIMBOLOS = ["+ alfabeto + "]\r\n";
+        res += "INICIO = [" +  inicio + "]\r\n";
+        res += "ACEPTACION = " + fin + "\r\n";
         res += "TRANSICION = ";
         res = this.subconjuntos.stream().map((est) -> est.getEnlaces()+"-").reduce(res, String::concat);
         

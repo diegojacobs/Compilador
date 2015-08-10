@@ -25,9 +25,13 @@ public class Compilador {
         // TODO code application logic here
         System.out.println("Ingrese su expresión regular: ");
         Scanner input = new Scanner(System.in);
-        String exp = input.nextLine();
+        String exp = input.nextLine(); 
+        System.out.println("Ingrese su cadena a simular: ");
+        String cadena = input.nextLine();
+        
         myPostfix postfix = new myPostfix();
-        tree arbol = new tree();
+        tree arbol = new tree(); //Nuestro arbol
+        long time_start, time_end; //Para medir tiempos de ejecucion
        
         //Lo pasamos a postfix
         String post = postfix.infixToPostfix(exp);
@@ -78,43 +82,53 @@ public class Compilador {
         String res = aut.toString();
         file.agregar(res);
         
-        System.out.println("Ingrese su cadena: ");
-        Scanner input2 = new Scanner(System.in);
-        String exp2 = input2.nextLine();
-        
         //Simulamos la cadena ingresada en el AFN
-        SimulacionAFN simu = new SimulacionAFN(aut.getAuto(),exp2);
-        System.out.println(simu.Simular());
+        SimulacionAFN simu = new SimulacionAFN(aut.getAuto(),cadena);
+        time_start = System.currentTimeMillis();
+        System.out.println("Contiene la cadena Ingresada: "+simu.Simular());
+        time_end = System.currentTimeMillis();
+        System.out.println("La simulación tomo: "+ ( time_end - time_start ) +" millisegundos");
         txt = "SimulacionAFN.txt";
         file = new Archivo(txt);
         if (simu.Simular())
-            file.agregar("La cadena: "+ exp2 +" a sido aceptada");
+        {
+            file.agregar("La cadena: "+ cadena +" a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
+        }
         else
-            file.agregar("La cadena "+ exp2 +" no a sido aceptada");
+            file.agregar("La cadena "+ cadena +" no a sido aceptada"+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
         
         String alfabeto = simbolos.replaceAll(",", "");
         
+        //Mandamos a nuestra clase subconjunto el AFN y nuestro alfabeto
         Subconjunto nuevo = new Subconjunto(aut.getAuto(),alfabeto);
         
+        //Construimos el AFD
         nuevo.Construir();
         
+        //Obtenemos los datos del AFD
         String AFD = nuevo.getNewauto().toString();
-        
         System.out.println(AFD);
         
+        //Creamos el archivo con los datos del AFD
         txt = "AFD.txt";
         file = new Archivo(txt);
-        file.agregar(nuevo.toString());
+        file.agregar(nuevo.getNewauto().toString());
         
+        
+        
+        //Simulamos el AFD con nuestra expresión
         SimulacionAFD simu2;
-        simu2 = new SimulacionAFD(nuevo.getNewauto(),exp2);
-        System.out.println(simu2.SimularFD());
+        simu2 = new SimulacionAFD(nuevo.getNewauto(),cadena);
+        time_start = System.currentTimeMillis();
+        System.out.println("Contiene la cadena Ingresada: "+simu2.SimularFD());
+        time_end = System.currentTimeMillis();
+        System.out.println("La simulación tomo: "+ ( time_end - time_start ) +" millisegundos");
         txt = "SimulacionAFD.txt";
         file = new Archivo(txt);
         if (simu2.SimularFD())
-            file.agregar("La cadena: "+ exp2 +" a sido aceptada");
+            file.agregar("La cadena: "+ cadena +" a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
         else
-            file.agregar("La cadena: "+ exp2 +" no a sido aceptada");
+            file.agregar("La cadena: "+ cadena +" no a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
     }
     
 }

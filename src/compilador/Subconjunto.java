@@ -170,7 +170,7 @@ public class Subconjunto<T> {
         Stack<EstadoFD> st = new Stack();
         ArrayList<EstadoFD> sub = new ArrayList();
         ArrayList<EstadoFD> check = new ArrayList();
-        ArrayList<EstadoFD> fin = new ArrayList();
+        ArrayList<EstadoFD> fin = new ArrayList(); 
         Estado inicial = afn.getInicio();
         
         //Tendremos nuestro contador de estados creados
@@ -182,10 +182,11 @@ public class Subconjunto<T> {
         
         //Le hacemos eclosure al estado inicial y este sera nuestro estado inicial del AFD
         ArrayList<Estado> temp = eclosure(ini);
+        sort(temp); //Ordenamos el estado
         EstadoFD state = new EstadoFD(temp);
         state.setId(contS);
         contS++;
-       
+        
         //Agregamos el estado a los subconjuntos
         sub.add(state);
         
@@ -213,91 +214,96 @@ public class Subconjunto<T> {
                 //Hacemos eclosure del resultado del move
                 res = eclosure(res);
                 
-                sort(res);
-                
-                //Creamos un estado del AFD con el subconjunto de estados obtenidos
-                //Ademas creamos la tansicion entre el estado origen al estado obtenido
-                EstadoFD stateD =new EstadoFD(res);
-                TransicionFD enlace = new TransicionFD(state,stateD,c);
-                
-                //Revisamos si nuestro estado resultante contiene el estado final del AFN
-                //Si lo tiene le asignamos el subconjunto como uno de los finales al AFD
-                if (res.contains(afn.getFin()))
-                    fin.add(stateD);
-                
-                //Revisamos si nuestro estado revisado ya con tiene la transicion creada
-                //Si no la tiene se la agregamos
-                if (!state.getEnlaces().contains(enlace))
-                    state.setEnlace(enlace);
-                
-                //Revisamos si nuestro estado resultante ya forma parte de los estados del AFD
-                //Si no forma parte lo agregamos
-                boolean flag1 = false;
-                boolean agregar = false;
-                int i = 0;
-                while (i<sub.size() && !flag1)
+                if (res.size() > 0)
                 {
-                    EstadoFD comp = sub.get(i);
-                    if (comp.getEstados().equals(stateD.getEstados()))
-                        flag1 = true;
-                    i++;
+                    sort(res);
+                    
+                    //Revisamos si es un nuevo subconjunto
+                    //Si es nuevo se hace una nueca transicion
+                    //Si no es nuevo se hace la traniscion al estado ya existente
+                    boolean nuevo = true;
+                    for (EstadoFD subtemp : sub) 
+                        if (subtemp.getEstados().equals(res)) 
+                        {
+                            TransicionFD enlace = new TransicionFD(state,subtemp,c);
+                            //Revisamos si nuestro estado revisado ya con tiene la transicion creada
+                            //Si no la tiene se la agregamos
+                            if (!state.getEnlaces().contains(enlace))
+                                state.setEnlace(enlace);
+                            nuevo = false;
+                        }
+                        
+                    EstadoFD stateD = new EstadoFD();
+                    if (nuevo)
+                    {
+                        stateD = new EstadoFD(res);
+                        TransicionFD enlace = new TransicionFD(state,stateD,c);
+                        state.setEnlace(enlace);
+                    }
+                    
+                    //Si nuesestro subconjunto es nuevo se agrega al arraylist de subconjuntos
+                    if (nuevo)
+                    {
+                        sub.add(stateD);
+                        stateD.setId(contS);
+                        contS++;
+                    }
+
+                    //Debemos ver si el estado no esta entre los estados por revisar en ele stack
+                    ArrayList<EstadoFD> compA = new ArrayList();
+                    while (nuevo && st.size() > 0)
+                        compA.add(st.pop());
+
+                    boolean flag2 = false;
+                    int i=0;
+
+                    while (nuevo && i<compA.size() && !flag2)
+                    {
+                        EstadoFD comp = compA.get(i);
+                        if (comp.getEstados().equals(stateD.getEstados()))
+                            flag2 = true;
+                        i++;
+                    }
+                    boolean lleno = false;
+                    while (nuevo && !lleno)
+                    {
+                        for (i = 0; i<compA.size();i++)
+                            st.push(compA.get(i));
+                        lleno = true;
+                    }
+
+                    //Revisamos si el estado resultante ya a sido revisado
+                    boolean flag3 = false;
+                    i = 0;
+                    while (nuevo && i<check.size() && !flag3)
+                    {
+                        EstadoFD comp = check.get(i);
+                        if (comp.getEstados().equals(stateD.getEstados()))
+                            flag3 = true;
+                        i++;
+                    }
+
+                    //Si no a sido revisado se agrega al stack
+                    if (nuevo && !flag3 && !flag2)
+                        st.push(stateD);
+                    
+                    //Revisamos si nuestro estado resultante contiene el estado final del AFN
+                    //Si lo tiene le asignamos el subconjunto como uno de los finales al AFD
+                    if (res.contains(afn.getFin()))
+                        fin.add(stateD);
                 }
-                if (!flag1)
-                {
-                    agregar = true;
-                    sub.add(stateD);
-                    stateD.setId(contS);
-                    contS++;
-                }
-                
-                //Debemos ver si el estado no esta entre los estados por revisar en ele stack
-                ArrayList<EstadoFD> compA = new ArrayList();
-                while (!flag1 && st.size() > 0)
-                    compA.add(st.pop());
-                
-                boolean flag2 = false;
-                i=0;
-                
-                while (i<compA.size() && !flag2 && !flag1)
-                {
-                    EstadoFD comp = compA.get(i);
-                    if (comp.getEstados().equals(stateD.getEstados()))
-                        flag2 = true;
-                    i++;
-                }
-                boolean lleno = false;
-                while (!flag1 && !lleno)
-                {
-                    for (i = 0; i<compA.size();i++)
-                        st.push(compA.get(i));
-                    lleno = true;
-                }
-                
-                //Revisamos si el estado resultante ya a sido revisado
-                boolean flag3 = false;
-                i = 0;
-                while (i<check.size() && !flag3 && !flag1)
-                {
-                    EstadoFD comp = check.get(i);
-                    if (comp.getEstados().equals(stateD.getEstados()))
-                        flag3 = true;
-                    i++;
-                }
-                
-                //Si no a sido revisado se agrega al stack
-                if (agregar && !flag3 && !flag2)
-                    st.push(stateD);
-                
             }
         }
         
-        temp = eclosure(ini);
-        state = new EstadoFD(temp);
+        
+        EstadoFD start = new EstadoFD(ini);
+        start = sub.get(0);
+       
         //Ponemos como estado inicial de nuestro AFD el resultado del eclosure
         //Ponemos como estado final nuestros estados finales obtenidos
         //ponemos como subconjuntos los subconjuntos obtenidos
         //Lo agregamos a nuestro subconjunto de estados
-        newauto = new AutomataFD(state,fin,sub,this.alfabeto);
+        newauto = new AutomataFD(start,fin,sub,this.alfabeto);
     }
     
 }
