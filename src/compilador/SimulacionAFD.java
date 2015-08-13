@@ -11,7 +11,7 @@ import java.util.Stack;
 
 /**
  *
- * @author Usuario
+ * @author Diego Jacobs 13160
  */
 public class SimulacionAFD<T> {
     private AutomataFD auto;

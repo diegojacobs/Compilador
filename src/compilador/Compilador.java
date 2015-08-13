@@ -12,7 +12,8 @@ package compilador;
 
 //Caracteres especiales
 //@ es epsilon
-//
+//$ sirve para operaciones unarias en el arbol
+//# sirve para construccion directa del AFD
 
 import java.util.Scanner;
 
@@ -41,7 +42,7 @@ public class Compilador {
         //armamos el arbol
         arbol.armar(arbol);
         
-        //Lo recorremos con un inorder
+        //Lo recorremos con un postOrder
         String end_tree = arbol.postOrder(arbol.getRaiz());
         
         String fin = new String();
@@ -129,6 +130,12 @@ public class Compilador {
             file.agregar("La cadena: "+ cadena +" a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
         else
             file.agregar("La cadena: "+ cadena +" no a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
+    
+    
+        Construccion_Directa cons = new Construccion_Directa(arbol);
+        cons.agregarHastag();
+        String directo = arbol.postOrder(cons.getArbol().getRaiz());
+        System.out.println(directo);
     }
     
 }

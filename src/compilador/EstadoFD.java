@@ -57,11 +57,16 @@ public class EstadoFD {
     public String toString()
     {
         String states = new String();
-        for (Estado estado : estados) 
-            states += estado.toString()+",";
-        states = states.substring(0, states.length()-1);
-        
-        return this.id+" = {"+states+"}";
+        if (estados != null)
+        {
+            for (Estado estado : estados) 
+                states += estado.toString()+",";
+            states = states.substring(0, states.length()-1);
+            
+            return this.id+" = {"+states+"}";
+        }
+        else
+            return states;
     }
     
 }

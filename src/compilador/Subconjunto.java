@@ -187,6 +187,11 @@ public class Subconjunto<T> {
         state.setId(contS);
         contS++;
         
+        //Revisamos si nuestro estado resultante contiene el estado final del AFN
+        //Si lo tiene le asignamos el subconjunto como uno de los finales al AFD
+        if (temp.contains(afn.getFin()))
+            fin.add(state);
+        
         //Agregamos el estado a los subconjuntos
         sub.add(state);
         
@@ -289,7 +294,7 @@ public class Subconjunto<T> {
                     
                     //Revisamos si nuestro estado resultante contiene el estado final del AFN
                     //Si lo tiene le asignamos el subconjunto como uno de los finales al AFD
-                    if (res.contains(afn.getFin()))
+                    if (nuevo && res.contains(afn.getFin()))
                         fin.add(stateD);
                 }
             }
