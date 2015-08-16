@@ -111,7 +111,7 @@ public class Compilador {
         System.out.println(AFD);
         
         //Creamos el archivo con los datos del AFD
-        txt = "AFD.txt";
+        txt = "AFD-Subconjuntos.txt";
         file = new Archivo(txt);
         file.agregar(nuevo.getNewauto().toString());
         
@@ -132,10 +132,21 @@ public class Compilador {
             file.agregar("La cadena: "+ cadena +" no a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
     
     
-        Construccion_Directa cons = new Construccion_Directa(arbol);
-        cons.agregarHastag();
-        String directo = arbol.postOrder(cons.getArbol().getRaiz());
+        Construccion_Directa cons = new Construccion_Directa(arbol,alfabeto);
+        String directo = arbol.inOrder(cons.getArbol().getRaiz());
         System.out.println(directo);
+        
+        //Le ponemos un numero a cada hoja
+        arbol.ponerNum(arbol.getRaiz());
+        
+        cons.construir();
+        
+        System.out.println(cons.getAFD().toString());
+        
+        //Creamos el archivo con los datos del AFD
+        txt = "AFD-Directo.txt";
+        file = new Archivo(txt);
+        file.agregar(cons.getAFD().toString());
     }
     
 }

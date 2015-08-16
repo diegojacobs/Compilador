@@ -6,6 +6,7 @@
 package compilador;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -17,14 +18,17 @@ public class tree {
     private Nodo raiz;
     private Nodo actual;
     private String hojas = new String();
+    private ArrayList<Nodo> nodos = new ArrayList();
     private Stack<Character> st = new Stack<Character>();
-    List<Character> unarios = Arrays.asList('*');
-    List<Character> binarios = Arrays.asList('|','.');
-    List<Character> operadores = Arrays.asList('|','.','*');
+    private List<Character> unarios = Arrays.asList('*');
+    private List<Character> binarios = Arrays.asList('|','.');
+    private List<Character> operadores = Arrays.asList('|','.','*');
+    private int cont;
     
     public void tree()
     {
         raiz = null;
+        cont = 1;
     }
 
     public Nodo getRaiz() 
@@ -45,6 +49,25 @@ public class tree {
     public void setActual(Nodo actual) 
     {
         this.actual = actual;
+    }
+
+    public ArrayList<Nodo> getNodos() {
+        return nodos;
+    }
+
+    public void setNodos(Nodo node) {
+        this.nodos.add(node);
+    }
+    
+    public boolean isHoja (Nodo n) {
+        if (n != null) {
+            if (n.getLeft() == null && n.getRight() == null) {
+                return true;
+            }
+            getHojas(n.getLeft());
+            getHojas(n.getRight());
+        }
+        return false;
     }
     
     public void llenarStack(String exp)
@@ -102,13 +125,17 @@ public class tree {
         Character c = st.pop();
         
         if (binarios.contains(c))
+        {
             raiz= new Nodo(c, null);
+            this.setNodos(raiz);
+        }
         else
         {
             raiz = new Nodo(c, null);
             raiz.setBin(false);
             Nodo n = new Nodo('$', actual);
             raiz.setRight(n);
+            this.setNodos(raiz);
         }
         
         actual=raiz;
@@ -124,6 +151,7 @@ public class tree {
                     Nodo n = new Nodo(c1, actual);
                     actual.setRight(n);
                     actual = actual.getRight();
+                    this.setNodos(actual);
                 }
                 else
                     if (actual.getLeft() == null)
@@ -131,6 +159,7 @@ public class tree {
                         Nodo n = new Nodo(c1, actual);
                         actual.setLeft(n);
                         actual = actual.getLeft();
+                        this.setNodos(actual);
                     }
             }
             else
@@ -143,6 +172,8 @@ public class tree {
                         actual.setRight(n);
                     
                         actual = actual.getRight();
+                        
+                        this.setNodos(actual);
                     
                         Nodo der = new Nodo('$', actual);
                     
@@ -154,11 +185,11 @@ public class tree {
                             Nodo n = new Nodo(c1, actual);
                             actual.setLeft(n);
                             actual = actual.getLeft();
+                            this.setNodos(actual);
                         
-                            Nodo izq = new Nodo('$', actual);
+                            Nodo der = new Nodo('$', actual);
                     
-                            actual.setLeft(izq);
-                            
+                            actual.setRight(der);
                         } 
                 }
                 else
@@ -168,12 +199,14 @@ public class tree {
                         {
                             Nodo n = new Nodo(c1,actual);
                             actual.setRight(n);
+                            this.setNodos(n);
                         }
                         else 
                             if (actual.getLeft() == null)
                             {
                                 Nodo n = new Nodo(c1,actual);
-                                actual.setLeft(n);    
+                                actual.setLeft(n);
+                                this.setNodos(n);
                             }
                             else 
                             {
@@ -187,6 +220,7 @@ public class tree {
                                 Nodo n = new Nodo(c1,actual);
                                     
                                 actual.setLeft(n);
+                                this.setNodos(n);
                                 
                                 flag = false;
                             }
@@ -212,4 +246,14 @@ public class tree {
         return hojas;
     }
     
+    public void ponerNum(Nodo n)
+    { 
+        if (n != null) {
+            if (n.getLeft() == null && n.getRight() == null && n.getCarac() != '$') {
+                n.setId(++cont);
+            }
+            ponerNum(n.getLeft());
+            ponerNum(n.getRight());
+        }
+    }
 }

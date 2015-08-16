@@ -12,11 +12,10 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Subconjunto.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Compilador.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Thompson.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Automata.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/SimulacionAFD.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/tree.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Nodo.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Construccion_Directa.java</file>
         </group>
     </open-files>
 </project-private>

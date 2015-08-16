@@ -16,6 +16,7 @@ public class Nodo {
     private Nodo left;
     private Nodo previous;
     private boolean bin;
+    private int id;
     
     public Nodo(Character c, Nodo n)
     {
@@ -24,6 +25,7 @@ public class Nodo {
         left = null;
         previous = n;
         bin =true;
+        id = 0;
     }
     
     public void setCarac(Character a)
@@ -69,7 +71,24 @@ public class Nodo {
     public void setPrevious(Nodo previous) {
         this.previous = previous;
     }
-    
-    
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public boolean isHoja()
+    {
+         return (right==null &&left==null);       
+    }
+    @Override
+    public String toString()
+    {
+        String res = new String();
+        res+= this.id;
+        return res;
+    }
 }

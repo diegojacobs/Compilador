@@ -11,27 +11,27 @@ import java.util.ArrayList;
  *
  * @author Diego Jacobs 13160
  */
-public class Estado {
-    private int num;
+public class Estado<T> {
+    private T num;
     private ArrayList<Transicion> enlaces = new ArrayList();
     private boolean inicial;
     private boolean fin;
 
     
-    public Estado(int num)
+    public Estado(T num)
     {
         this.num = num;
     }
-    public Estado(int num, ArrayList<Transicion> enlaces) {
+    public Estado(T num, ArrayList<Transicion> enlaces) {
         this.num = num;
         this.enlaces = enlaces;
     }
 
-    public int getNum() {
+    public T getNum() {
         return num;
     }
 
-    public void setNum(int num) {
+    public void setNum(T num) {
         this.num = num;
     }
 

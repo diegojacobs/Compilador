@@ -154,7 +154,7 @@ public class Subconjunto<T> {
             i++;
             flag=true;
             for (int j=0;j<estados.size() - i;j++)
-                if (estados.get(j).getNum() > estados.get(j+1).getNum())
+                if ((int)estados.get(j).getNum() > (int)estados.get(j+1).getNum())
                 {
                     flag=false;
                     Estado temp = estados.get(j);
