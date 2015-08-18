@@ -1,2 +1,2 @@
-La cadena: abb a sido aceptada.
+La cadena: ab a sido aceptada.
  La simulación tomo: 0 millisegundos

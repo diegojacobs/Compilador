@@ -14,21 +14,21 @@ import java.util.Stack;
  * @author Diego Jacobs 13160
  */
 public class SimulacionAFD<T> {
-    private AutomataFD auto;
+    private Automata auto;
     private String exp;
     private ArrayList<EstadoFD> alcanzados;
     
-    public SimulacionAFD(AutomataFD at, String cadena)
+    public SimulacionAFD(Automata at, String cadena)
     {
         this.auto = at;
         this.exp = cadena;
     }
 
-    public AutomataFD getAutoFD() {
+    public Automata getAutoFD() {
         return auto;
     }
 
-    public void setAutoFD (AutomataFD auto) {
+    public void setAutoFD (Automata auto) {
         this.auto = auto;
     }
 
@@ -48,16 +48,16 @@ public class SimulacionAFD<T> {
         this.alcanzados.add(alcanzado);
     }
     
-    public EstadoFD move(EstadoFD estado, Character c)
+    public Estado move(Estado estado, T c)
     {
-        EstadoFD visitados = new EstadoFD();
+        Estado visitados = new Estado(null);
         
         //Mandamos a traer los enlaces de nuestr estado
-        ArrayList<TransicionFD> enlaces = estado.getEnlaces();
+        ArrayList<Transicion> enlaces = estado.getEnlaces();
             
-        for (TransicionFD enlace : enlaces) 
+        for (Transicion enlace : enlaces) 
         {
-            if (enlace.getSimbolo() == c)
+            if (enlace.getT() == c)
             {
                 visitados = enlace.getDestino();
             }
@@ -71,18 +71,18 @@ public class SimulacionAFD<T> {
     //Revisamos si el alfabeto acepta la cadena ingresada
     public boolean SimularFD()
     {
-        EstadoFD estados = new EstadoFD(auto.getInicio().getEstados());
+        Estado estados = new Estado(auto.getInicio());
        
         estados = auto.getInicio();
         //estados.add(auto.getInicio());
         
         for (Character c : exp.toCharArray())
         {
-            estados = move(estados,c);
+            estados = move(estados,(T)c);
         }
         
         boolean flag = false;
-        for (EstadoFD fin : auto.getFin()) 
+        for (Estado fin : auto.getFin()) 
         {
             if (estados.equals(fin))
                 flag = true;

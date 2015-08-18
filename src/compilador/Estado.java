@@ -16,15 +16,21 @@ public class Estado<T> {
     private ArrayList<Transicion> enlaces = new ArrayList();
     private boolean inicial;
     private boolean fin;
+    private int id;
 
-    
+    public Estado()
+    {
+        
+    }
     public Estado(T num)
     {
         this.num = num;
+        this.id = -1;
     }
     public Estado(T num, ArrayList<Transicion> enlaces) {
         this.num = num;
         this.enlaces = enlaces;
+        this.id = -1;
     }
 
     public T getNum() {
@@ -58,11 +64,22 @@ public class Estado<T> {
     public void setEnlace(Transicion enlace) {
         this.enlaces.add(enlace);
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     
     @Override
     public String toString()
     {
-        return "{"+this.num+"}";
+        if (id == -1)
+            return "{"+this.num+"}";
+        else
+            return this.id+" = {"+this.num+"}";
     }
     
     

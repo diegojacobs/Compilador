@@ -47,6 +47,6 @@ public class Transicion<T> {
     @Override
     public String toString()
     {
-        return "(" + origen.getNum()+ ", " + simb + ", " + destino.getNum() + ")";
+        return "(" + origen.getNum()+ " --" + simb + "--> " + destino.getNum() + ")";
     }
 }

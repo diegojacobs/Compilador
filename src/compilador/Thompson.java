@@ -5,6 +5,7 @@
  */
 package compilador;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -136,7 +137,10 @@ public class Thompson<T>{
             *lo concatenamos con el inicio del segundo automata
             */
             if (cont == auto2.getEstados().size()-1)
-                temp.setEnlace(new Transicion(auto2.getFin(),auto1.getInicio(),"@"));
+            {
+                Estado origen = auto2.getFin().get(0);
+                temp.setEnlace(new Transicion(origen,auto1.getInicio(),"@"));
+            }
            
             auto_res.setEstado(temp);
         }
@@ -217,8 +221,8 @@ public class Thompson<T>{
         Debemos buscar los finales anteriores de ambos de nuestros objetos
         y enlasarlos con nuestro nuevo fin mediante epsilon
         */
-        Estado fin_ant    = auto1.getFin();
-        Estado fin_ant2    = auto2.getFin();
+        Estado fin_ant = auto1.getFin().get(0);
+        Estado fin_ant2 = auto2.getFin().get(0);
          
         fin_ant.getEnlaces().add(new Transicion(fin_ant, nuevoFin, "@"));
         fin_ant2.getEnlaces().add(new Transicion(fin_ant2,nuevoFin,"@"));
@@ -259,7 +263,7 @@ public class Thompson<T>{
         barco.setEstado(nuevoFin);
         barco.setFin(nuevoFin);
         
-        Estado ant_fin = auto1.getFin();
+        Estado ant_fin = auto1.getFin().get(0);
         
        
         nuevoInicio.getEnlaces().add(new Transicion(nuevoInicio, nuevoFin, "@"));

@@ -66,7 +66,8 @@ public class Compilador {
         }
         
         //Quitamos la ultima ,
-        simbolos = simbolos.substring(0,simbolos.length()-1);
+        if (simbolos.length() > 1)
+            simbolos = simbolos.substring(0,simbolos.length()-1);
 
         //Creamos el archivo
         String txt = "AFN.txt";
@@ -147,6 +148,85 @@ public class Compilador {
         txt = "AFD-Directo.txt";
         file = new Archivo(txt);
         file.agregar(cons.getAFD().toString());
+        
+        Automata prueba = new Automata();
+        
+        Estado a = new Estado("a");
+        a.setId(0);
+        prueba.setInicio(a);
+        prueba.setEstado(a);
+        
+        Estado b = new Estado("b");
+        b.setId(1);
+        Estado c = new Estado("c");
+        c.setId(2);
+        Estado d = new Estado("d");
+        d.setId(3);
+        Estado e = new Estado("e");
+        e.setId(4);
+        Estado f = new Estado("f");
+        f.setId(5);
+        Estado g = new Estado("g");
+        g.setId(6);
+        Estado h = new Estado("h");
+        h.setId(7);
+        a.setEnlace(new Transicion(a,b,"0"));
+        a.setEnlace(new Transicion(a,f,"1"));
+        b.setEnlace(new Transicion(b,c,"1"));
+        b.setEnlace(new Transicion(b,g,"0"));
+        c.setEnlace(new Transicion(c,c,"1"));
+        c.setEnlace(new Transicion(c,a,"0"));
+        d.setEnlace(new Transicion(d,c,"0"));
+        d.setEnlace(new Transicion(d,g,"1"));
+        e.setEnlace(new Transicion(e, f, "1"));
+        e.setEnlace(new Transicion(e, h, "0"));
+        f.setEnlace(new Transicion(f, c, "0"));
+        f.setEnlace(new Transicion(f, g, "1"));
+        g.setEnlace(new Transicion(g,g,"0"));
+        g.setEnlace(new Transicion(g,e,"1"));
+        h.setEnlace(new Transicion(h,c,"1"));
+        h.setEnlace(new Transicion(h,g,"0"));
+        prueba.setEstado(b);
+        prueba.setEstado(c);
+        prueba.setEstado(d);
+        prueba.setEstado(e);
+        prueba.setEstado(f);
+        prueba.setEstado(g);
+        prueba.setEstado(h);
+        prueba.setFin(c);
+        prueba.setNofin(a);
+        prueba.setNofin(b);
+        prueba.setNofin(d);
+        prueba.setNofin(e);
+        prueba.setNofin(f);
+        prueba.setNofin(g);
+        prueba.setNofin(h);
+        
+        prueba.setAlfabeto("01");
+        
+        
+        //Minimizamos nuestro AFD Subconjuntos
+        MinimizarAFD min = new MinimizarAFD(nuevo.getNewauto(),alfabeto);
+        min.minimizar();
+        
+        System.out.println("\nAutomata AFD Subconjuntos Minimo ");
+        System.out.println(min.getNewAFD().toString());
+        
+        //Creamos el archivo con los datos de la minimización del AFD subconjuntos
+        txt = "Minimizacion-AFD-Subconjuntos.txt";
+        file = new Archivo(txt);
+        file.escribir(min.getNewAFD().toString());
+        
+        
+        //Minimizamos nuestro AFD Directo
+        min = new MinimizarAFD(cons.getAFD(),alfabeto);
+        min.minimizar();
+        System.out.println("\nAutomata AFD Directo Minimo ");
+        System.out.println(min.getNewAFD().toString());
+        //Creamos el archivo con los datos de la minimización del AFD Directo
+        txt = "Minimizacion-AFD-Directo.txt";
+        file = new Archivo(txt);
+        file.escribir(min.getNewAFD().toString());
     }
     
 }

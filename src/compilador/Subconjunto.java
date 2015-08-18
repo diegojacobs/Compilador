@@ -15,7 +15,7 @@ import java.util.Stack;
  */
 public class Subconjunto<T> {
     private Automata afn;
-    private AutomataFD newauto;
+    private Automata newauto;
     private ArrayList<EstadoFD> estados;
     private String alfabeto;
     
@@ -24,13 +24,15 @@ public class Subconjunto<T> {
     {
         afn = auto;
         alfabeto = alfa;
+        newauto = new Automata();
+        newauto.setAlfabeto(alfabeto);
     }
 
-    public AutomataFD getNewauto() {
+    public Automata getNewauto() {
         return newauto;
     }
 
-    public void setNewauto(AutomataFD newauto) {
+    public void setNewauto(Automata newauto) {
         this.newauto = newauto;
     }
 
@@ -167,10 +169,8 @@ public class Subconjunto<T> {
     public void Construir()
     {
         //Creamos un stack donde meteremos los estados que se deben revisar
-        Stack<EstadoFD> st = new Stack();
-        ArrayList<EstadoFD> sub = new ArrayList();
-        ArrayList<EstadoFD> check = new ArrayList();
-        ArrayList<EstadoFD> fin = new ArrayList(); 
+        Stack<Estado> st = new Stack();
+        ArrayList<Estado> check = new ArrayList();
         Estado inicial = afn.getInicio();
         
         //Tendremos nuestro contador de estados creados
@@ -183,17 +183,17 @@ public class Subconjunto<T> {
         //Le hacemos eclosure al estado inicial y este sera nuestro estado inicial del AFD
         ArrayList<Estado> temp = eclosure(ini);
         sort(temp); //Ordenamos el estado
-        EstadoFD state = new EstadoFD(temp);
+        Estado state = new Estado(temp);
         state.setId(contS);
         contS++;
-        
+        newauto.setInicio(state);
         //Revisamos si nuestro estado resultante contiene el estado final del AFN
         //Si lo tiene le asignamos el subconjunto como uno de los finales al AFD
         if (temp.contains(afn.getFin()))
-            fin.add(state);
+            newauto.setFin(state);
         
         //Agregamos el estado a los subconjuntos
-        sub.add(state);
+        newauto.setEstado(state);
         
         //Lo metemos a la pila para crear sus transiciones
         st.push(state);
@@ -203,7 +203,6 @@ public class Subconjunto<T> {
         {
             //sacamos un estado y obtenemos el arraylist que forma este estado del AFD
             state = st.pop();
-            temp = state.getEstados();
             
             //Agregamos a los estados revisados el estado actual ya que lo vamos a revisar
             //revisados.add(state);
@@ -214,7 +213,7 @@ public class Subconjunto<T> {
                 /*Debemos hacer un movedel subconjunto de estados 
                  sin perder este subconjunto con un caracter del alfabeto
                 */
-                ArrayList<Estado> res = move(temp,(T)c);
+                ArrayList<Estado> res = move((ArrayList<Estado>) state.getNum(),(T)c);
                 
                 //Hacemos eclosure del resultado del move
                 res = eclosure(res);
@@ -227,10 +226,10 @@ public class Subconjunto<T> {
                     //Si es nuevo se hace una nueca transicion
                     //Si no es nuevo se hace la traniscion al estado ya existente
                     boolean nuevo = true;
-                    for (EstadoFD subtemp : sub) 
-                        if (subtemp.getEstados().equals(res)) 
+                    for (Estado subtemp : newauto.getEstados()) 
+                        if (subtemp.getNum().equals(res)) 
                         {
-                            TransicionFD enlace = new TransicionFD(state,subtemp,c);
+                            Transicion enlace = new Transicion(state,subtemp,c);
                             //Revisamos si nuestro estado revisado ya con tiene la transicion creada
                             //Si no la tiene se la agregamos
                             if (!state.getEnlaces().contains(enlace))
@@ -238,24 +237,20 @@ public class Subconjunto<T> {
                             nuevo = false;
                         }
                         
-                    EstadoFD stateD = new EstadoFD();
+                    Estado stateD = new Estado(null);
                     if (nuevo)
                     {
-                        stateD = new EstadoFD(res);
-                        TransicionFD enlace = new TransicionFD(state,stateD,c);
+                        stateD = new Estado(res);
+                        Transicion enlace = new Transicion(state,stateD,c);
                         state.setEnlace(enlace);
-                    }
                     
-                    //Si nuesestro subconjunto es nuevo se agrega al arraylist de subconjuntos
-                    if (nuevo)
-                    {
-                        sub.add(stateD);
+                        newauto.setEstado(stateD);
                         stateD.setId(contS);
                         contS++;
                     }
 
-                    //Debemos ver si el estado no esta entre los estados por revisar en ele stack
-                    ArrayList<EstadoFD> compA = new ArrayList();
+                    //Debemos ver si el estado no esta entre los estados por revisar en el stack
+                    ArrayList<Estado> compA = new ArrayList();
                     while (nuevo && st.size() > 0)
                         compA.add(st.pop());
 
@@ -264,8 +259,8 @@ public class Subconjunto<T> {
 
                     while (nuevo && i<compA.size() && !flag2)
                     {
-                        EstadoFD comp = compA.get(i);
-                        if (comp.getEstados().equals(stateD.getEstados()))
+                        Estado comp = compA.get(i);
+                        if (comp.equals(stateD))
                             flag2 = true;
                         i++;
                     }
@@ -282,8 +277,8 @@ public class Subconjunto<T> {
                     i = 0;
                     while (nuevo && i<check.size() && !flag3)
                     {
-                        EstadoFD comp = check.get(i);
-                        if (comp.getEstados().equals(stateD.getEstados()))
+                        Estado comp = check.get(i);
+                        if (comp.equals(stateD))
                             flag3 = true;
                         i++;
                     }
@@ -294,21 +289,15 @@ public class Subconjunto<T> {
                     
                     //Revisamos si nuestro estado resultante contiene el estado final del AFN
                     //Si lo tiene le asignamos el subconjunto como uno de los finales al AFD
-                    if (nuevo && res.contains(afn.getFin()))
-                        fin.add(stateD);
+                    if (nuevo)
+                    {
+                        for (Estado s : res)
+                            if (afn.getFin().get(0).equals(s))
+                                newauto.setFin(stateD);
+                    }
                 }
             }
         }
-        
-        
-        EstadoFD start = new EstadoFD(ini);
-        start = sub.get(0);
-       
-        //Ponemos como estado inicial de nuestro AFD el resultado del eclosure
-        //Ponemos como estado final nuestros estados finales obtenidos
-        //ponemos como subconjuntos los subconjuntos obtenidos
-        //Lo agregamos a nuestro subconjunto de estados
-        newauto = new AutomataFD(start,fin,sub,this.alfabeto);
     }
     
 }

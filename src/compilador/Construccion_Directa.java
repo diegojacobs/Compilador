@@ -3,10 +3,6 @@ package compilador;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Queue;
 import java.util.Stack;
 
 /*
@@ -250,21 +246,31 @@ public class Construccion_Directa {
     
     public void construir()
     {
+        int cont_est = 0;
         ArrayList<Nodo> nodos = arbol.getNodos();
         for (Nodo node : nodos)
             followpos(node);
         
         ArrayList<Nodo> inicial;
+        ArrayList<Estado> fin = new ArrayList();
+        ArrayList<Estado> nofin = new ArrayList();
         
         //Miramos el firstpos de nuestro arbol(expresión) 
         inicial = firstpos(arbol.getRaiz());
         
         //Creamos un estado con los id devueltos del firstpos
         Estado state = new Estado(inicial);
+        state.setId(cont_est++);
         
         //Agregamos el estado y lo ponemos como inicial
         AFD.setEstado(state);
         AFD.setInicio(state);
+        //Revisamos si el nuevo estado es un estado de aceptación
+        Nodo end = arbol.getRaiz().getRight();
+        if (inicial.contains(end))
+            AFD.setFin(state);
+        else
+            AFD.setNofin(state);
         
         Stack<ArrayList<Nodo>> st = new Stack();
         st.push(inicial);
@@ -299,6 +305,7 @@ public class Construccion_Directa {
                 {
                     //Creamos el nuevo estado
                     Estado destino = new Estado(temp);
+                    destino.setId(cont_est++);
                     
                     //Buscamos la posicion del estado anterior
                     int index = 0;
@@ -313,13 +320,15 @@ public class Construccion_Directa {
                     
                     //Creamos la nueva transición
                     Estado origen = AFD.getEstados().get(index);
-                    state.setEnlace(new Transicion(origen,destino,c));
+                    origen.setEnlace(new Transicion(origen,destino,c));
                     AFD.setEstado(destino);
                     
                     //Revisamos si el nuevo estado es un estado de aceptación
-                    Nodo fin = arbol.getRaiz().getRight();
-                    if (temp.contains(fin))
+                    end = arbol.getRaiz().getRight();
+                    if (temp.contains(end))
                         AFD.setFin(destino);
+                    else
+                        AFD.setNofin(destino);
                     
                     //Lo metemos al stack para revisarlo
                     st.push(temp);

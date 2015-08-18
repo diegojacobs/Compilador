@@ -13,7 +13,8 @@ import java.util.ArrayList;
  */
 public class Automata {
     private Estado inicio;
-    private Estado fin;
+    private ArrayList<Estado> fin = new ArrayList();
+    private ArrayList<Estado> nofin = new ArrayList();
     private ArrayList<Estado> estados = new ArrayList();
     private String alfabeto;
 
@@ -25,7 +26,15 @@ public class Automata {
     public Automata(Estado ini, Estado fin)
     {
         this.inicio = ini;
+        this.fin.add(fin);
+    }
+    
+    public Automata(Estado ini, ArrayList<Estado> fin, ArrayList<Estado> states, String alfa)
+    {
+        this.inicio = ini;
         this.fin = fin;
+        this.estados = states;
+        this.alfabeto = alfa;
     }
     
     public Estado getInicio() {
@@ -36,12 +45,12 @@ public class Automata {
         this.inicio = inicio;
     }
 
-    public Estado getFin() {
+    public ArrayList<Estado> getFin() {
         return fin;
     }
 
     public void setFin(Estado fin) {
-        this.fin = fin;
+        this.fin.add(fin);
     }
 
     public ArrayList<Estado> getEstados() {
@@ -59,6 +68,24 @@ public class Automata {
     public void setAlfabeto(String alfabeto) {
         this.alfabeto = alfabeto;
     }
+
+    public ArrayList<Estado> getNofin() {
+        return nofin;
+    }
+
+    public void setNofin(Estado nofin) {
+        this.nofin.add(nofin);
+    }
+    
+    public Estado findEstadobyId(int id)
+    {
+        Estado state = new Estado(null);
+        for (Estado temp : estados)
+            if (temp.getId() == id)
+                state=temp;
+        
+        return state;
+    }
     
     @Override
     public String toString()
@@ -69,7 +96,7 @@ public class Automata {
         res += "INICIO = " +  inicio + "\r\n";
         res += "ACEPTACION = " + fin + "\r\n";
         res += "TRANSICION = ";
-        res = this.estados.stream().map((est) -> est.getEnlaces()+"-").reduce(res, String::concat);
+        res = this.estados.stream().map((est) ->est.getEnlaces()+", ").reduce(res, String::concat);
         
         return res;
     }

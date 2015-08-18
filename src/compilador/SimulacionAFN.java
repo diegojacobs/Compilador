@@ -50,11 +50,12 @@ public class SimulacionAFN<T> {
     
     public ArrayList<Estado> simple_move(Estado estado, T c)
     {
+        Stack<Estado> st = new Stack();
         ArrayList<Estado> visitados = new ArrayList();
        
+        
         //Mandamos a traer los enlaces de nuestr estado
         ArrayList<Transicion> enlaces = estado.getEnlaces();
-            
         for (Transicion enlace : enlaces) 
         {
             T simb;
@@ -64,6 +65,7 @@ public class SimulacionAFN<T> {
                 Estado destino = enlace.getDestino();
                 if (!visitados.contains(destino))
                     visitados.add(destino);
+                    
             }
         }
         
@@ -97,7 +99,9 @@ public class SimulacionAFN<T> {
             
             for (Transicion enlace : enlaces) 
             {
-                if (enlace.getT() == c)
+                T simb;
+                simb = (T) enlace.getT();
+                if (Objects.equals(simb, c))
                 {
                     Estado destino = enlace.getDestino();
                     if (!visitados.contains(destino))
@@ -163,6 +167,10 @@ public class SimulacionAFN<T> {
             estados = eclosure(estados);
         }
         
-        return estados.contains(auto.getFin());
+        boolean aceptado = false;
+        for (Estado state : estados)
+            if (auto.getFin().contains(state))
+                aceptado = true;
+        return aceptado;
     }
 }
