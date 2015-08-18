@@ -191,6 +191,8 @@ public class Subconjunto<T> {
         //Si lo tiene le asignamos el subconjunto como uno de los finales al AFD
         if (temp.contains(afn.getFin()))
             newauto.setFin(state);
+        else
+            newauto.setNofin(state);
         
         //Agregamos el estado a los subconjuntos
         newauto.setEstado(state);
@@ -289,11 +291,17 @@ public class Subconjunto<T> {
                     
                     //Revisamos si nuestro estado resultante contiene el estado final del AFN
                     //Si lo tiene le asignamos el subconjunto como uno de los finales al AFD
+                    boolean fin = false;
                     if (nuevo)
                     {
                         for (Estado s : res)
                             if (afn.getFin().get(0).equals(s))
+                            {
+                                fin = true;
                                 newauto.setFin(stateD);
+                            }
+                        if (!fin)
+                            newauto.setNofin(stateD);
                     }
                 }
             }
