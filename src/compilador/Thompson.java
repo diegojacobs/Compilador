@@ -82,9 +82,11 @@ public class Thompson<T>{
                default:
                    //Simplemente creamos un automata de un simbolo y lo metemos a nuestro stack
                    Automata simple = simbolo((T)c);
-                   st.push(simple); 
+                   st.push(simple);
            }
        }
+       if (st.size() > 0)
+           auto = (Automata)st.pop();
     }
     
     //Creacion de un automata de solo un simbolo
@@ -105,7 +107,7 @@ public class Thompson<T>{
         
        //Asignamos como inicio su origen
        auto_temp.setInicio(origen);
-        
+       auto_temp.setNofin(origen);
        //Asignamos como fin su destino
        auto_temp.setFin(destino);
         

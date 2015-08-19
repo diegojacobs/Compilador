@@ -93,8 +93,13 @@ public class Automata {
         String res = new String();
         res += "ESTADOS = " + estados.toString() + "\r\n";
         res += "SIMBOLOS = ["+ this.alfabeto + "]\r\n";
-        res += "INICIO = " +  inicio + "\r\n";
-        res += "ACEPTACION = " + fin + "\r\n";
+        res += "INICIO = " +  inicio.getId() + "\r\n";
+        res += "ACEPTACION = [";
+        for(Estado s : fin)
+        {
+            res += s.getId() + ",";
+        }
+        res +="]\r\n";
         res += "TRANSICION = ";
         res = this.estados.stream().map((est) ->est.getEnlaces()+", ").reduce(res, String::concat);
         

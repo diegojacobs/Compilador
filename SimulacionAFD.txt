@@ -1,2 +1,2 @@
-La cadena: acd a sido aceptada.
+La cadena: abb a sido aceptada.
  La simulación tomo: 0 millisegundos

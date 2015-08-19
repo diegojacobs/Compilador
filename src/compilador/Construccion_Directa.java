@@ -29,7 +29,7 @@ public class Construccion_Directa {
         AFD = new Automata();
         AFD.setAlfabeto(alfa);
         this.arbol = set;
-        agregarHashtag();
+        //agregarHashtag();
         alfabeto = alfa;
     }
 
@@ -293,74 +293,77 @@ public class Construccion_Directa {
                     }
                 }
                 
-                sort (temp);
-                
-                //Revisamos si el estado ya fue creado
-                boolean igual = false;
-                for (Estado s : AFD.getEstados())
-                    if (s.getNum().equals(temp))
-                        igual = true;
-                
-                if (!igual)
+                if(temp.size()>0)
                 {
-                    //Creamos el nuevo estado
-                    Estado destino = new Estado(temp);
-                    destino.setId(cont_est++);
-                    
-                    //Buscamos la posicion del estado anterior
-                    int index = 0;
-                    boolean flag = false;
-                    for (Estado stateT : AFD.getEstados()) 
+                    sort (temp);
+
+                    //Revisamos si el estado ya fue creado
+                    boolean igual = false;
+                    for (Estado s : AFD.getEstados())
+                        if (s.getNum().equals(temp))
+                            igual = true;
+
+                    if (!igual)
                     {
-                        if (actual == stateT.getNum())
-                            flag=true;
-                        if (!flag)
-                            index++;
+                        //Creamos el nuevo estado
+                        Estado destino = new Estado(temp);
+                        destino.setId(cont_est++);
+
+                        //Buscamos la posicion del estado anterior
+                        int index = 0;
+                        boolean flag = false;
+                        for (Estado stateT : AFD.getEstados()) 
+                        {
+                            if (actual == stateT.getNum())
+                                flag=true;
+                            if (!flag)
+                                index++;
+                        }
+
+                        //Creamos la nueva transición
+                        Estado origen = AFD.getEstados().get(index);
+                        origen.setEnlace(new Transicion(origen,destino,c));
+                        AFD.setEstado(destino);
+
+                        //Revisamos si el nuevo estado es un estado de aceptación
+                        end = arbol.getRaiz().getRight();
+                        if (temp.contains(end))
+                            AFD.setFin(destino);
+                        else
+                            AFD.setNofin(destino);
+
+                        //Lo metemos al stack para revisarlo
+                        st.push(temp);
                     }
-                    
-                    //Creamos la nueva transición
-                    Estado origen = AFD.getEstados().get(index);
-                    origen.setEnlace(new Transicion(origen,destino,c));
-                    AFD.setEstado(destino);
-                    
-                    //Revisamos si el nuevo estado es un estado de aceptación
-                    end = arbol.getRaiz().getRight();
-                    if (temp.contains(end))
-                        AFD.setFin(destino);
                     else
-                        AFD.setNofin(destino);
-                    
-                    //Lo metemos al stack para revisarlo
-                    st.push(temp);
-                }
-                else
-                {
-                    //Buscamos la posicion del estado anterior
-                    int index = 0;
-                    boolean flag = false;
-                    for (Estado stateT : AFD.getEstados()) 
                     {
-                        if (actual == stateT.getNum())
-                            flag=true;
-                        if (!flag)
-                            index++;
+                        //Buscamos la posicion del estado anterior
+                        int index = 0;
+                        boolean flag = false;
+                        for (Estado stateT : AFD.getEstados()) 
+                        {
+                            if (actual == stateT.getNum())
+                                flag=true;
+                            if (!flag)
+                                index++;
+                        }
+
+                        //Buscamos la posicion del estado destino
+                        int index2 = 0;
+                        flag = false;
+                        for (Estado stateT : AFD.getEstados()) 
+                        {
+                            if (temp.equals(stateT.getNum()))
+                                flag=true;
+                            if (!flag)
+                                index2++;
+                        }
+
+                        //Creamos la transicion
+                        Estado origen = AFD.getEstados().get(index);
+                        Estado destino = AFD.getEstados().get(index2);
+                        origen.setEnlace(new Transicion(origen,destino,c));
                     }
-                    
-                    //Buscamos la posicion del estado destino
-                    int index2 = 0;
-                    flag = false;
-                    for (Estado stateT : AFD.getEstados()) 
-                    {
-                        if (temp.equals(stateT.getNum()))
-                            flag=true;
-                        if (!flag)
-                            index2++;
-                    }
-                    
-                    //Creamos la transicion
-                    Estado origen = AFD.getEstados().get(index);
-                    Estado destino = AFD.getEstados().get(index2);
-                    origen.setEnlace(new Transicion(origen,destino,c));
                 }
             }
         }

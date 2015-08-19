@@ -79,7 +79,7 @@ public class MinimizarAFD<T> {
         ArrayList<ArrayList<Estado>> particion = new ArrayList();
         
         //Lista donde tendremos los estados con sus transiciones
-        ArrayList<HashMap> L = new ArrayList();
+        ArrayList<Estado> L = new ArrayList();
         ArrayList<ArrayList<Estado>> L2 = new ArrayList();
         
         //Obtenemos los estados que son de aceptacion y los que no
@@ -102,39 +102,44 @@ public class MinimizarAFD<T> {
             ArrayList<Estado> g = particion.get(index);
             
             //Para cada estado del grupo g
-          for (Estado s : g)
+            for (Estado s : g)
             {
-                HashMap Ds = new HashMap();
-                ArrayList<Estado> D2s = new ArrayList();
-                     
+                Estado Ds= new Estado();
+                ArrayList<Estado> D2s = new ArrayList();     
                 //Para cada simbolo del alfabeto
                 for (Character c : alfabeto.toCharArray())
                 {
                     //Buscamos el estado destino con la transicion
                     state = move(s,c);
-                    //Para cada grupo h de la particion 
-                    for (ArrayList<Estado> h : particion)
+                    if (state.getNum() != null)
                     {
-                        if (h.contains(state))
+                        //Para cada grupo h de la particion 
+                        for (ArrayList<Estado> h : particion)
                         {
-                            ArrayList<Estado> tempS = new ArrayList();
-                            int j=0;       
-                            while (h.size() > j)
+                            if (h.contains(state))
                             {
-                                Estado stateT = h.get(j);
-                                D2s.add(stateT);
-                                j++;
+                                int j=0;       
+                                while (h.size() > j)
+                                {
+                                    Estado stateT = h.get(j);
+                                    D2s.add(stateT);
+                                    j++;
+                                }
+                                Ds=s;
                             }
-                            tempS.add(state);
-                            Ds.put(s.getId(), tempS);
                         }
                     }
                 }
                 //Agregamos Ds a L
-                if (state.getNum() !=null)
+                if (D2s.size() > 0)
                 {
                     L.add(Ds);
                     L2.add(D2s);
+                }
+                else
+                {
+                    L.add(s);
+                    L2.add(null);
                 }
             }
                     
@@ -144,11 +149,11 @@ public class MinimizarAFD<T> {
             while (L.size()>0)
             {
                 //Obtenemos nuestro Dx
-                HashMap Dx = L.get(0);
+                Estado Dx = L.get(0);
                         
                 //Obtenemos el key de nuestro Dx
                 int key = 0;
-                while (!Dx.containsKey(key))
+                while (Dx.getId()!=key)
                     key++;
                 
                 //Obtenemos nuestros Estados
@@ -173,10 +178,10 @@ public class MinimizarAFD<T> {
                 int j = 0;
                 while (L.size() > j)
                 {
-                    HashMap Dy = L.get(j);
+                    Estado Dy = L.get(j);
                     //Buscamos el key de nuestro Dy
                     int key2 = 0;
-                    while (!Dy.containsKey(key2))
+                    while (Dy.getId()!=(key2))
                         key2++;
                     //Agregamos nuestro Dy a un ArrayList para comparar
                     ArrayList<Estado> tempDy = L2.get(L.indexOf(Dy));
@@ -204,13 +209,14 @@ public class MinimizarAFD<T> {
                         L.remove(Dy);
                         L2.remove(tempDy);
                     }
-                    j++;
+                    else 
+                        j++;
                 }
                 i++;
             }
             
             //Si K0 es diferente a nuestro grupo g
-            if (K.size() > 0 && !K.get(0).equals(g) && state.getNum() != null)
+            if (K.size() > 0 && !K.get(0).equals(g))
             {
                 //Removemos el grupo g de nuestra particion
                 particion.remove(g);
@@ -234,7 +240,6 @@ public class MinimizarAFD<T> {
                 
         }
         
-        //Creamos el nuevo AFD
         index=0;
         for (ArrayList<Estado> J : particion)
         {
@@ -262,36 +267,40 @@ public class MinimizarAFD<T> {
             }
             else
                 newAFD.setNofin(newstate);
-            
-            //Miramos las transiciones de lso estados
-        for (Estado s: J)
-        {
-            ArrayList<Transicion> enlaces = s.getEnlaces();
-            for (Transicion enlace  : enlaces)
-            {
-                Estado destino = enlace.getDestino();
-                for (ArrayList<Estado> estados : particion)
-                {
-                    Estado destinoF = new Estado(estados);
-                    if (estados.contains(destino))
-                    {
-                        ArrayList<Transicion> enlacesF = newstate.getEnlaces();
-                        boolean existe = false;
-                        for (Transicion enlaceF : enlacesF)
-                            if(enlaceF.getT()==enlace.getT())
-                                existe =true;
-                        if (!existe)
-                            newstate.setEnlace(new Transicion(newstate,destinoF,enlace.getT()));
-                    }
-                }
-            
-            }
-        }
             index++;
         }
         
-        
+        for(ArrayList<Estado> J : particion)
+        {
+            for (Estado s : J)
+            {
+               ArrayList<Transicion> enlaces = s.getEnlaces();
+                for (Transicion enlace  : enlaces)
+                {
+                    Estado destino = enlace.getDestino();
+                    for (ArrayList<Estado> estados : particion)
+                    {            
+                        if (estados.contains(destino))
+                        {
+                            for (Estado temp : newAFD.getEstados())
+                                if (temp.getNum().equals(J))
+                                {
+                                    ArrayList<Transicion> enlacesF = temp.getEnlaces();
+                                    boolean existe = false;
+                                    for (Transicion enlaceF : enlacesF)
+                                        if(enlaceF.getT()==enlace.getT())
+                                            existe =true;
+                                    if (!existe)
+                                    {
+                                        for (Estado tempdes : newAFD.getEstados())
+                                            if (tempdes.getNum().equals(estados))
+                                                temp.setEnlace(new Transicion(temp,tempdes,enlace.getT()));
+                                    }
+                                }
+                        } 
+                    }
+                }
+            } 
+        }
     }
-    
-    
 }
