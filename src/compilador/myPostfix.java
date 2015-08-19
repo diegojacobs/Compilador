@@ -98,7 +98,7 @@ public class myPostfix {
 		
             Stack<Character> stack = new Stack<Character>();
                     
-	    String formattedRegEx = formatRegEx(regex);
+	    String formattedRegEx = formatRegEx(abr);
 
 	    for (Character c : formattedRegEx.toCharArray()) {
 	        switch (c) {

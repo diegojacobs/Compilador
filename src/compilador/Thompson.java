@@ -87,6 +87,9 @@ public class Thompson<T>{
        }
        if (st.size() > 0)
            auto = (Automata)st.pop();
+       
+       for (Estado s : auto.getEstados())
+           s.setId((int)s.getNum());
     }
     
     //Creacion de un automata de solo un simbolo
