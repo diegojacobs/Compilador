@@ -14,10 +14,12 @@
         <group>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Compilador.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/MinimizarAFD.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/SimulacionAFN.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Graficar_Automata.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/tree.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Transicion.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Automata.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Thompson.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/myPostfix.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Estado.java</file>
         </group>
     </open-files>

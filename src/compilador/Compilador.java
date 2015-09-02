@@ -15,6 +15,8 @@ package compilador;
 //$ sirve para operaciones unarias en el arbol
 //# sirve para construccion directa del AFD
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 
 public class Compilador {
@@ -22,7 +24,7 @@ public class Compilador {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedEncodingException, IOException {
         // TODO code application logic here
         System.out.println("Ingrese su expresión regular: ");
         Scanner input = new Scanner(System.in);
@@ -73,6 +75,9 @@ public class Compilador {
         aut.armar();
         aut.getAuto().setAlfabeto(simbolos);
         
+        Graficar_Automata grafica = new Graficar_Automata(aut.getAuto());
+        grafica.Graficar("GraficaAFN");
+        
         //Imprimimos el Automata AFN
         System.out.println(aut.toString());
         
@@ -105,6 +110,9 @@ public class Compilador {
         //Obtenemos los datos del AFD
         String AFD = nuevo.getNewauto().toString();
         System.out.println(AFD);
+        
+        grafica = new Graficar_Automata(nuevo.getNewauto());
+        grafica.Graficar("GraficaAFDSubconjuntos");
         
         //Creamos el archivo con los datos del AFD
         txt = "AFD-Subconjuntos.txt";
@@ -148,6 +156,22 @@ public class Compilador {
         file = new Archivo(txt);
         file.agregar(cons.getAFD().toString());
         
+        //Simulamos el AFD con nuestra expresión
+        simu2 = new SimulacionAFD(cons.getAFD(),cadena);
+        time_start = System.currentTimeMillis();
+        System.out.println("Contiene la cadena Ingresada: "+simu2.SimularFD());
+        time_end = System.currentTimeMillis();
+        System.out.println("La simulación tomo: "+ ( time_end - time_start ) +" millisegundos");
+        txt = "SimulacionAFDDirecto.txt";
+        file = new Archivo(txt);
+        if (simu2.SimularFD())
+            file.agregar("La cadena: "+ cadena +" a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
+        else
+            file.agregar("La cadena: "+ cadena +" no a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
+        
+        grafica = new Graficar_Automata(cons.getAFD());
+        grafica.Graficar("GraficaAFDDirecto");
+        
         //Minimizamos nuestro AFD Subconjuntos
         MinimizarAFD min = new MinimizarAFD(nuevo.getNewauto(),alfabeto);
         min.minimizar();
@@ -160,16 +184,48 @@ public class Compilador {
         file = new Archivo(txt);
         file.escribir(min.getNewAFD().toString());
         
+        //Simulamos el AFD con nuestra expresión
+        simu2 = new SimulacionAFD(min.getNewAFD(),cadena);
+        time_start = System.currentTimeMillis();
+        System.out.println("Contiene la cadena Ingresada: "+simu2.SimularFD());
+        time_end = System.currentTimeMillis();
+        System.out.println("La simulación tomo: "+ ( time_end - time_start ) +" millisegundos");
+        txt = "SimulacionAFDMinSubconjuntos.txt";
+        file = new Archivo(txt);
+        if (simu2.SimularFD())
+            file.agregar("La cadena: "+ cadena +" a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
+        else
+            file.agregar("La cadena: "+ cadena +" no a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
         
         //Minimizamos nuestro AFD Directo
         min = new MinimizarAFD(cons.getAFD(),alfabeto);
         min.minimizar();
         System.out.println("\nAutomata AFD Directo Minimo ");
         System.out.println(min.getNewAFD().toString());
+       
+        grafica = new Graficar_Automata(min.getNewAFD());
+        grafica.Graficar("GraficaAFDMinSubconjuntos");
+        
         //Creamos el archivo con los datos de la minimización del AFD Directo
         txt = "Minimizacion-AFD-Directo.txt";
         file = new Archivo(txt);
         file.escribir(min.getNewAFD().toString());
+        
+        grafica = new Graficar_Automata(min.getNewAFD());
+        grafica.Graficar("GraficaAFDMinDirecto");
+        
+        //Simulamos el AFD con nuestra expresión
+        simu2 = new SimulacionAFD(min.getNewAFD(),cadena);
+        time_start = System.currentTimeMillis();
+        System.out.println("Contiene la cadena Ingresada: "+simu2.SimularFD());
+        time_end = System.currentTimeMillis();
+        System.out.println("La simulación tomo: "+ ( time_end - time_start ) +" millisegundos");
+        txt = "SimulacionAFDMinDirecto.txt";
+        file = new Archivo(txt);
+        if (simu2.SimularFD())
+            file.agregar("La cadena: "+ cadena +" a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
+        else
+            file.agregar("La cadena: "+ cadena +" no a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
     }
     
 }

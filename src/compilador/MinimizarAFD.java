@@ -129,6 +129,11 @@ public class MinimizarAFD<T> {
                             }
                         }
                     }
+                    else
+                    {
+                        Ds=s;
+                        D2s.add(null);
+                    }
                 }
                 //Agregamos Ds a L
                 if (D2s.size() > 0)
@@ -185,32 +190,61 @@ public class MinimizarAFD<T> {
                         key2++;
                     //Agregamos nuestro Dy a un ArrayList para comparar
                     ArrayList<Estado> tempDy = L2.get(L.indexOf(Dy));
-                        
-                    if (tempDx.equals(tempDy))
+                    
+                    if (tempDx == null || tempDy == null)
                     {
-                        //Buscamos el estado asociado a Dy
-                        Estado Y = AFD.findEstadobyId(key2);
-                             
-                        ArrayList temp2 = new ArrayList();
-                        int q = 0;
-                        while (K.get(i).size() > q)
+                        if ((tempDx == null) &&(tempDy==null))
                         {
-                            ArrayList<Estado> states = K.get(i);
-                            temp2.add(states.get(q));
-                            q++;
-                        }
+                            //Buscamos el estado asociado a Dy
+                            Estado Y = AFD.findEstadobyId(key2);
+                             
+                            ArrayList temp2 = new ArrayList();
+                            int q = 0;
+                            while (K.get(i).size() > q)
+                            {
+                                ArrayList<Estado> states = K.get(i);
+                                temp2.add(states.get(q));
+                                q++;
+                            }
                         
-                        K.remove(i);
-                        temp2.add(Y);
-                        //Lo agregamos a nuestro conjunto
-                        K.add(i, temp2);
+                            K.remove(i);
+                            temp2.add(Y);
+                            //Lo agregamos a nuestro conjunto
+                            K.add(i, temp2);
                                 
-                        //Quitamos Dy de L
-                        L.remove(Dy);
-                        L2.remove(tempDy);
+                            //Quitamos Dy de L
+                            L.remove(Dy);
+                            L2.remove(tempDy);
+                        }
+                        else
+                            j++;
                     }
-                    else 
-                        j++;
+                    else
+                        if (tempDx.equals(tempDy))
+                        {
+                            //Buscamos el estado asociado a Dy
+                            Estado Y = AFD.findEstadobyId(key2);
+                             
+                            ArrayList temp2 = new ArrayList();
+                            int q = 0;
+                            while (K.get(i).size() > q)
+                            {
+                                ArrayList<Estado> states = K.get(i);
+                                temp2.add(states.get(q));
+                                q++;
+                            }
+                        
+                            K.remove(i);
+                            temp2.add(Y);
+                            //Lo agregamos a nuestro conjunto
+                            K.add(i, temp2);
+                                
+                            //Quitamos Dy de L
+                            L.remove(Dy);
+                            L2.remove(tempDy);
+                        }
+                        else 
+                            j++;
                 }
                 i++;
             }
