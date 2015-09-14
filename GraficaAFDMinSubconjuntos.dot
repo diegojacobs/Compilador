@@ -1,30 +1,12 @@
 digraph GraficaAFDMinSubconjuntos {
 rankdir=LR;
-0 [ shape="circle"]
 {
 node [style = invisible]
 INI
 }
-INI -> 1[label="Inicio"]
+INI -> 0[label="Inicio"]
 
-1 [ shape="circle"]
-2 [ shape="doublecircle"]
-2[fillcolor="#1D22E8"];
-3 [ shape="doublecircle"]
-3[fillcolor="#1D22E8"];
-4 [ shape="doublecircle"]
-4[fillcolor="#1D22E8"];
-0->2[label="b"]
-1->3[label="a"]
-1->4[label="b"]
-1->4[label="z"]
-1->2[label="y"]
-2->0[label="a"]
-2->2[label="y"]
-3->4[label="a"]
-3->1[label="b"]
-3->4[label="z"]
-4->4[label="a"]
-4->4[label="b"]
-4->4[label="z"]
+0 [ shape="circle"]
+0->0[label="a"]
+0->0[label="b"]
 }

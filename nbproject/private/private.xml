@@ -12,15 +12,9 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/LectorGramatica.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Compilador.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/MinimizarAFD.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Graficar_Automata.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/tree.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Transicion.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Automata.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Thompson.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/myPostfix.java</file>
-            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Estado.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Compilador/src/compilador/Archivo.java</file>
         </group>
     </open-files>
 </project-private>

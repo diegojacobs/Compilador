@@ -6,16 +6,38 @@
 package compilador;
 
 import java.io.*;
+import java.util.ArrayList;
 /**
  *
  * @author Diego Jacobs 13160
  */
 public class Archivo {
-    private String doc;
+    private String doc = new String();
+    private ArrayList<String> lineas = new ArrayList();
     
     public Archivo(String txt)
     {
         this.doc = txt;
+    }
+
+    public String getDoc() {
+        return doc;
+    }
+
+    public void setDoc(String doc) {
+        this.doc = doc;
+    }
+
+    public ArrayList<String> getLineas() {
+        return lineas;
+    }
+    
+    public String getLineas(int index) {
+        return lineas.get(index);
+    }
+
+    public void setLineas(String linea) {
+        this.lineas.add(linea);
     }
     
     public void escribir(String texto)
@@ -62,5 +84,15 @@ public class Archivo {
             bw.close();
 
         }catch(IOException e){}
+    }
+    
+    void muestraContenido() throws FileNotFoundException, IOException {
+      String cadena;
+      FileReader f = new FileReader(doc);
+      BufferedReader buffer = new BufferedReader(f);
+      while((cadena = buffer.readLine())!=null) {
+          lineas.add(cadena);
+      }
+      buffer.close();
     }
 }

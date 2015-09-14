@@ -1,0 +1,5 @@
+Cocol = "Compiler" ident
+	ScannerSpecification
+	"End" ident'.'.
+
+ScannerSpecification =

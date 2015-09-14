@@ -26,6 +26,15 @@ public class Compilador {
      */
     public static void main(String[] args) throws UnsupportedEncodingException, IOException {
         // TODO code application logic here
+        
+        /********************************************************************/
+        /********************************************************************/
+        /********************************************************************/
+        /**********************       FASE 1        *************************/
+        /********************************************************************/
+        /********************************************************************/
+        /********************************************************************/
+        /*
         System.out.println("Ingrese su expresión regular: ");
         Scanner input = new Scanner(System.in);
         String exp = input.nextLine(); 
@@ -226,6 +235,27 @@ public class Compilador {
             file.agregar("La cadena: "+ cadena +" a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
         else
             file.agregar("La cadena: "+ cadena +" no a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
+    */
+        /********************************************************************/
+        /********************************************************************/
+        /********************************************************************/
+        /**********************       FASE 2        *************************/
+        /********************************************************************/
+        /********************************************************************/
+        /********************************************************************/
+        
+        Archivo ar = new Archivo("CocoR.txt");
+        ar.muestraContenido();
+        for (String linea : ar.getLineas())
+            System.out.println(linea);
+        
+        LectorGramatica lg = new LectorGramatica(ar.getLineas());
+        lg.validacion();
+        if (!lg.getErrores().isEmpty())
+            for (String linea : lg.getErrores())
+                System.out.println(linea);
+        else
+            System.out.println("No hay errores.");
     }
     
 }
