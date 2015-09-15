@@ -6,7 +6,7 @@
 package compilador;
 
 /**
- *
+ 
  * @author Diego Jacobs 13160
  */
 
@@ -17,6 +17,7 @@ package compilador;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Compilador {
@@ -27,6 +28,35 @@ public class Compilador {
     public static void main(String[] args) throws UnsupportedEncodingException, IOException {
         // TODO code application logic here
         
+        
+        /********************************************************************/
+        /********************************************************************/
+        /********************************************************************/
+        /**********************       FASE 2        *************************/
+        /********************************************************************/
+        /********************************************************************/
+        /********************************************************************/
+        
+        Archivo ar = new Archivo("CocoR.txt");
+        ar.muestraContenido();
+        
+        ArrayList<String> lineasCode = new ArrayList();
+        for (String linea : ar.getLineas())
+        {
+            System.out.println(linea);
+            if (!linea.trim().equals(""))
+                lineasCode.add(linea);
+        }
+        
+        LectorGramatica lg = new LectorGramatica(lineasCode);
+        lg.revisar();
+        if (!lg.getErrores().isEmpty())
+            for (String linea : lg.getErrores())
+                System.out.println(linea);
+        else
+            System.out.println("No hay errores.");
+        
+        
         /********************************************************************/
         /********************************************************************/
         /********************************************************************/
@@ -34,13 +64,14 @@ public class Compilador {
         /********************************************************************/
         /********************************************************************/
         /********************************************************************/
-        /*
+        
+    /*
         System.out.println("Ingrese su expresión regular: ");
-        Scanner input = new Scanner(System.in);
+       Scanner input = new Scanner(System.in);
         String exp = input.nextLine(); 
         System.out.println("Ingrese su cadena a simular: ");
         String cadena = input.nextLine();
-        
+  
         myPostfix postfix = new myPostfix();
         tree arbol = new tree(); //Nuestro arbol
         long time_start, time_end; //Para medir tiempos de ejecucion
@@ -236,26 +267,7 @@ public class Compilador {
         else
             file.agregar("La cadena: "+ cadena +" no a sido aceptada."+"\r\n La simulación tomo: "+ ( time_end - time_start )+" millisegundos");
     */
-        /********************************************************************/
-        /********************************************************************/
-        /********************************************************************/
-        /**********************       FASE 2        *************************/
-        /********************************************************************/
-        /********************************************************************/
-        /********************************************************************/
-        
-        Archivo ar = new Archivo("CocoR.txt");
-        ar.muestraContenido();
-        for (String linea : ar.getLineas())
-            System.out.println(linea);
-        
-        LectorGramatica lg = new LectorGramatica(ar.getLineas());
-        lg.validacion();
-        if (!lg.getErrores().isEmpty())
-            for (String linea : lg.getErrores())
-                System.out.println(linea);
-        else
-            System.out.println("No hay errores.");
+
     }
     
 }

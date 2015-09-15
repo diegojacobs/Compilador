@@ -90,7 +90,6 @@ public class myPostfix {
             
             //Quitamos la abreviación ?
             abr = abr_signo(abr);
-            System.out.println("Sin abreviaciones: "+abr);
 	    
             String postfix = new String();
                    
