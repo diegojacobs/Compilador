@@ -499,25 +499,31 @@ public class LectorGramatica {
         //Realizamos el ScannerSpecification
         ScannerSpecification();
         
-        //Revisamos solo END
-        temp = gramatica.get(contL);
-        if (!checkString("End",temp))
-            errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
-        
-        //Buscamos el ident
-        if (!Ident(temp,true,true))
-            this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
+        if (this.contL >= gramatica.size())
+        {
+            this.errores.add("Error en Linea hace falta End");
+        }
         else
-            this.ids.add(this.id);
-        //Revisamos que el ident de inicio sea igual al de fin
-        if (!ids.get(0).equals(ids.get(ids.size()-1)))
-            errores.add("El ident inicial no coincide con el ident final.");
-        
-        //Buscamos que termine con .
-        temp = gramatica.get(contL);
-        if (!checkString(".",temp.substring(this.lastindex+1)))
-            errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
-        
+        {
+            //Revisamos solo END
+            temp = gramatica.get(contL);
+            if (!checkString("End",temp))
+                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
+
+            //Buscamos el ident
+            if (!Ident(temp,true,true))
+                this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
+            else
+                this.ids.add(this.id);
+            //Revisamos que el ident de inicio sea igual al de fin
+            if (!ids.get(0).equals(ids.get(ids.size()-1)))
+                errores.add("El ident inicial no coincide con el ident final.");
+
+            //Buscamos que termine con .
+            temp = gramatica.get(contL);
+            if (!checkString(".",temp.substring(this.lastindex+1)))
+                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
+        }
     }
     
     /****
@@ -570,7 +576,7 @@ public class LectorGramatica {
      */
     private void setDecl()
     {
-        while (!checkString("KEYWORDS",gramatica.get(contL).trim()) && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("End",gramatica.get(contL).trim()))
+        while (contL<gramatica.size() && !checkString("KEYWORDS",gramatica.get(contL).trim()) && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("End",gramatica.get(contL).trim()))
         {
             String temp = gramatica.get(contL);
         
@@ -705,7 +711,7 @@ public class LectorGramatica {
      */
     private void KeywordDecl()
     {
-        while (!checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("End",gramatica.get(contL).trim()))
+        while (contL<gramatica.size() && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("End",gramatica.get(contL).trim()))
         {
             //Debemos resetear el lastindex
             this.lastindex = 0;
@@ -742,8 +748,9 @@ public class LectorGramatica {
     private void WhiteSpaceDecl(String expr)
     {
         this.lastindex = 0;
-        while (checkString("IGNORE",gramatica.get(contL).trim()) && contL<gramatica.size())
+        while (contL<gramatica.size() && checkString("IGNORE",gramatica.get(contL).trim()))
         {
+            expr = gramatica.get(this.contL);
             //Revisamos el Set
             Set(expr);
             
