@@ -41,14 +41,16 @@ public class Compilador {
         ar.muestraContenido();
         
         ArrayList<String> lineasCode = new ArrayList();
+        int i = 0;
         for (String linea : ar.getLineas())
         {
-            System.out.println(linea);
+            
+            System.out.println(++i +".  "+linea);
             if (!linea.trim().equals(""))
                 lineasCode.add(linea);
         }
         
-        LectorGramatica lg = new LectorGramatica(lineasCode);
+        LectorGramatica lg = new LectorGramatica(lineasCode,ar.getLineas());
         lg.revisar();
         if (!lg.getErrores().isEmpty())
             for (String linea : lg.getErrores())
@@ -67,7 +69,7 @@ public class Compilador {
         
     /*
         System.out.println("Ingrese su expresión regular: ");
-       Scanner input = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
         String exp = input.nextLine(); 
         System.out.println("Ingrese su cadena a simular: ");
         String cadena = input.nextLine();

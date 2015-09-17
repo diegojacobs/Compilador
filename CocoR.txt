@@ -1,10 +1,19 @@
-Compiler  Ejemplo
+Compiler Ejemplo
 
 CHARACTERS
 
-KEYWORDS
-hola =
+letter = 'A' + CHR(95).
+digit = "0123456789".
+letras = 'a'..'z'+letter.
+arrova = CHR(64).
 
-IGNORE
-			
+KEYWORDS
+
+if = "if".
+while = "while".
+
+IGNORE hola.
+IGNORE "string"+'c'.
+IGNORE CHR(10) - CHR(100).
+
 End Ejemplo.

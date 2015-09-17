@@ -14,8 +14,10 @@ import java.util.ArrayList;
  */
 public class LectorGramatica {
     ArrayList<String> gramatica;
+    ArrayList<String> archivo;
     private ArrayList<String> errores = new ArrayList();
     private ArrayList<String> ids = new ArrayList();
+    private String id = new String();
     private int contL = 0;
     private int lastindex;
     Thompson afnLETTER;
@@ -23,6 +25,7 @@ public class LectorGramatica {
     Thompson afnDIGIT;
     Thompson afnIDENT;
     Thompson afnSTRING;
+    Thompson afnCHAR;
     
     
     //Vocabulario de Cocol
@@ -31,12 +34,13 @@ public class LectorGramatica {
     private final String any = "("+letter+"|"+digit+"|#|!|¡|¿|%|/|=|¸|;|:|,|€|<|>|¨|{|}|[|]|^|~|·|½|-|_)";
     private final String ident = letter + "("+letter+"|"+digit+")*";
     private final String number = digit+"("+digit+")*";
-    private final String string = "\""+"("+any+")*"+"\"";
-    private final String caracter = "\'"+"("+any+")"+"\'";
+    private final String string = "("+any+")*";
+    private final String caracter = "("+any+")";
     
-    public LectorGramatica(ArrayList<String> lineas)
+    public LectorGramatica(ArrayList<String> lineas, ArrayList<String> archivo)
     {
         gramatica = lineas;
+        this.archivo = archivo;
         myPostfix postfix = new myPostfix();
         
         /*
@@ -73,6 +77,13 @@ public class LectorGramatica {
         post = postfix.infixToPostfix(string);
         afnSTRING = new Thompson(post);
         afnSTRING.armar();
+        
+        /*
+        * Creamos un afn para revisar chars
+        */
+        post = postfix.infixToPostfix(caracter);
+        afnCHAR = new Thompson(post);
+        afnCHAR.armar();
     }
 
     public ArrayList<String> getGramatica() {
@@ -91,7 +102,13 @@ public class LectorGramatica {
         this.errores = errores;
     }
     
-    /*
+    //Nos sirve para obtener el verdadero valor de la linea que estamos revisando
+    public int getIndex(String linea)
+    {
+        return archivo.indexOf(linea)+1;
+    }
+    
+    /****
     *Comparamos dos Strings caracter por caracter
     *debemos asegurarnos de que lo que queremos buscar no sea mas grande que 
     *el String donde lo estamos buscando
@@ -102,56 +119,46 @@ public class LectorGramatica {
     {
         boolean igual = true;
 
+        /*Debemos buscar la primera letra en comp
+        *para empezar a revisar des ahi
+        *ademas debemos asegurarnos que el tamaño de comp sea mayor a 0
+        */
+        int index = 0;
+        if (comp.length() > index)
+        {
+            Character c = comp.charAt(index);
+            while (c == ' ')
+            {
+                index++;
+                c = comp.charAt(index);
+                this.lastindex++;
+            }
+            comp = comp.substring(index);
         
-        for (int i=0; i<expr.length();i++)
-            if (expr.length()>i && comp.length()>i)
-                if (expr.charAt(i) != comp.charAt(i))
-                    igual = false;
+            for (int i=0; i<expr.length();i++)
+                if (expr.length()>i && comp.length()>i)
+                    if (expr.charAt(i) != comp.charAt(i))
+                        igual = false;
+                    else
+                        this.lastindex++;
                 else
-                    this.lastindex++;
-            else
-                igual = false;
+                    igual = false;
+        }
+        else
+            igual = false;
         
         return igual;
     }
-    public void revisar()
-    {
-        //Revisamos la primera Linea
-        String temp = gramatica.get(contL);
-        if (!checkString("Compiler",temp))
-            errores.add("Error en Linea "+Integer.toString(contL+1)+".");
-        
-        ident(temp,false);
-        
-        if (this.lastindex+1 < temp.length())
-            this.errores.add("Error en Linea "+Integer.toString(contL+1)+" "+temp.substring(this.lastindex+1)+" no pudo ser reconocido.");
-        
-        //Comenzamos una nueva linea
-        this.lastindex = 0;
-        contL++;
-        
-        //Realizamos el ScannerSpecification
-        ScannerSpecification();
-        
-        //Revisamos solo END
-        temp = gramatica.get(contL);
-        if (!checkString("End",temp))
-            errores.add("Error en Linea "+Integer.toString(contL+1)+".");
-        
-        //Buscamos el ident
-        ident(temp, true);
-       
-        //Revisamos que el ident de inicio sea igual al de fin
-        if (!ids.get(0).equals(ids.get(ids.size()-1)))
-            errores.add("El ident inicial no coincide con el ident final.");
-        
-        //Buscamos que termine con .
-        temp = gramatica.get(contL);
-        if (!checkString(".",temp.substring(this.lastindex+1)))
-            errores.add("Error en Linea "+Integer.toString(contL+1)+".");
-        
-    }
     
+    /****
+     * Revisamos lis ident 
+     * si son aceptados los guardamos en el arraylist de ids
+     * si es uno repetido reportamos el error
+     * 
+     * @param expr recibimos un String y el mira cual fue el ultimo index que acepto
+     * @param fin nos sirve para ver si es el ident final
+     * 
+     */
     private void ident(String expr, boolean fin)
     {
         String id = "";
@@ -176,13 +183,13 @@ public class LectorGramatica {
         */
         this.lastindex = index;
         String temp = expr.substring(index,index+1);
-        SimulacionAFN simu = new SimulacionAFN(afnIDENT.getAuto(),temp.toString());
+        SimulacionAFN simu = new SimulacionAFN(afnIDENT.getAuto(),temp);
         boolean flag = simu.Simular();
         while (((this.lastindex+1)<expr.length()) && flag)
         {
             this.lastindex++;
             temp = expr.substring(index,this.lastindex+1);
-            simu = new SimulacionAFN(afnIDENT.getAuto(),temp.toString());
+            simu = new SimulacionAFN(afnIDENT.getAuto(),temp);
             flag = simu.Simular();
         }
         
@@ -197,29 +204,327 @@ public class LectorGramatica {
             this.lastindex--;
             id=temp.substring(0, temp.length()-1);
         }
-        /*
-        if (!letter.contains(c))
-            this.errores.add("Error en Linea "+Integer.toString(contL+1)+". ident no aceptado. Debe empezar con Letra.");
- 
-        for (int i=1; i<temp.length();i++)
-        {
-            c = temp.substring(i,i+1);
-            if(letter.contains(c) || digit.contains(c)) 
-            {
-                id += temp.charAt(i);
-            } 
-            else 
-            {
-                id += temp.charAt(i);
-                this.errores.add("Error en Linea "+Integer.toString(contL+1)+". ident no aceptado. El caracter \'"+c+"\' no puede ser utilizado.");
-            }
-        }
-        */
+        
         if (ids.contains(id) && !fin)
-            this.errores.add("El ident en la linea "+Integer.toString(contL+1)+" ya ha sido usado anteriormente.");
+            this.errores.add("El ident en la linea "+Integer.toString(getIndex(expr))+" ya ha sido usado anteriormente.");
         
         ids.add(id);
     }
+    
+    /****
+     * Revisamos lis ident 
+     * si son aceptados los guardamos en el arraylist de ids
+     * si es uno repetido reportamos el error
+     * 
+     * @param expr recibimos un String y el mira cual fue el ultimo index que acepto
+     * @param fin nos sirve para ver si es el ident final
+     * 
+     * Devolvemos si fue aceptado o no
+     * para esto debemos revisar si no fue aceptado, si lo que continua
+     * puede ser aceptado por la siguiente instruccion
+     */
+    private boolean Ident(String expr, boolean fin, boolean idIzq)
+    {
+        int tempindex = this.lastindex;
+        boolean flag = true;
+        
+        this.id = "";
+        /*
+        *Buscamos el primer caracter que no sea espacio en blanco
+        *Para empezar a buscar desde ahi
+        */
+        int index = this.lastindex;
+        Character c = expr.charAt(index);
+        while (c == ' ')
+        {
+            index++;
+            c = expr.charAt(index);
+        }
+        
+        /*
+        *Copiamos el index donde debemos empezar a buscar a nuestro ultimo index 
+        *buscamos el primer caracter a simular 
+        *tenemos una bandera para saber cuando deja de poder simular
+        *ademas debemos de asegurarnos de parar tambien si ya no tenemos mas que simular
+        */
+        this.lastindex = index;
+        String temp = expr.substring(index,index+1);
+        SimulacionAFN simu = new SimulacionAFN(afnIDENT.getAuto(),temp);
+        flag = simu.Simular();
+        if (flag)
+            while (((this.lastindex+1)<expr.length()) && flag)
+            {
+                this.lastindex++;
+                temp = expr.substring(index,this.lastindex+1);
+                simu = new SimulacionAFN(afnIDENT.getAuto(),temp);
+                flag = simu.Simular();
+            }
+        else
+            return false;
+        
+        /*
+        * Si no logro ser simulada
+        * debemos revisar si el caracter que devolvio el false fue 
+        * uno con lo que puede continuar lo que viene.
+        */
+        if (flag)
+            this.id = temp;
+        else
+            if (expr.charAt(lastindex) == ' ' || expr.charAt(lastindex) == '+' || expr.charAt(lastindex) == '-' || expr.charAt(lastindex) == '.' || expr.charAt(lastindex) == '=')
+            {
+                this.lastindex--;
+                flag = true;
+                this.id = expr.substring(index, this.lastindex+1);
+            }
+        
+        if (flag)
+        {
+            if (ids.contains(this.id) && !fin && idIzq)
+                this.errores.add("El ident en la linea "+Integer.toString(getIndex(expr))+" ya ha sido usado anteriormente.");
+        
+            return true;
+        }
+        else 
+        {
+            this.lastindex = tempindex;
+            return false;
+        }
+    }
+    /***
+    * Metodo para simular un string
+    * recibimos un string en el cual debemos buscar dos comillas
+    * simulamos en un afn lo que este dentro
+    * si es aceptado es guardado
+    * si no es aceptado se da el mensaje de error
+    * devolvemos si logro o no ser aceptada la cadena
+    ***/
+    private boolean string(String expr)
+    {
+        int indexOriginal = this.lastindex;
+        String temp2 = expr.substring(this.lastindex);
+        int index = -1;
+        int index2 = -1;
+        boolean flag = true;
+        for (int i=0;i<temp2.length() && flag;i++)
+        {
+            char c = temp2.charAt(i);
+            if(c == '"' && index != -1)
+            {
+                flag=false;
+                index2 = i;
+            }
+            if(c == '"' && index == -1)
+                index = i;
+        }
+        
+        /*
+        * Miramos si logramos encontrar las comillas
+        * Si las encontramos simulamos en afnString nuestra cadena
+        * Si no reportamos error en la linea
+        */
+        
+        if (index == -1 || index2==index)
+            return false;
+        else
+        {
+            //debemos sumarle a nuestros index el ultimo index que reconocio 
+            index += this.lastindex;
+            index2 += this.lastindex;
+            temp2 = "";
+            temp2 += expr.charAt(index+1);
+            this.lastindex = index+1;
+            SimulacionAFN simu = new SimulacionAFN(afnSTRING.getAuto(),temp2);
+            flag = simu.Simular();
+            while (((this.lastindex+1)<index2) && flag)
+            {
+                this.lastindex++;
+                temp2 = expr.substring(index+1,this.lastindex+1);
+                simu = new SimulacionAFN(afnSTRING.getAuto(),temp2);
+                flag = simu.Simular();
+            }
+            
+            /*Revisamos si pudo simular toda la expresión
+            *Si la pudo simular volvemos nuestro lastindex el index de la segunda comilla
+            *si no la pudo simular volvemos nuestro lastindex el index con e que entro
+            */
+            if (flag)
+            {
+                this.lastindex = index2;
+                return true;
+            }
+            else
+            {
+                this.lastindex = indexOriginal;
+                return false;
+             }
+        }
+    }
+    
+    private boolean caracter(String expr)
+    {
+        int indexOriginal = this.lastindex;
+        String temp2 = expr.substring(this.lastindex);
+        int index = -1;
+        int index2 = -1;
+        boolean flag=true;
+        for (int i=0;i<temp2.length() && flag;i++)
+        {
+            char c = temp2.charAt(i);
+            if(c == '\'' && index != -1)
+            {
+                flag=false;
+                index2 = i;
+            }
+            if(c == '\'' && index == -1)
+                index = i;
+        }
+        
+        /*
+        * Miramos si logramos encontrar los apostrofes
+        * Si las encontramos simulamos en afnCHAR nuestra cadena
+        * Si no reportamos error en la linea
+        */
+        
+        if (index == -1 || index2==index || index+2!=index2)
+            return false;
+        else
+        {
+            //debemos sumarle a nuestros index el ultimo index que reconocio 
+            index += this.lastindex;
+            index2 += this.lastindex;
+            temp2 = "";
+            temp2 += expr.charAt(index+1);
+            this.lastindex = index+1;
+            SimulacionAFN simu = new SimulacionAFN(afnCHAR.getAuto(),temp2);
+            flag = simu.Simular();
+            
+            /*Revisamos si pudo simular toda la expresión
+            *Si la pudo simular volvemos nuestro lastindex el index de segundo apostrofe
+            *si no la pudo simular volvemos nuestro lastindex el index con e que entro
+            */
+            if (flag)
+            {
+                this.lastindex = index2;
+                return true;
+            }
+            else
+            {
+                this.lastindex = indexOriginal;
+                return false;
+             }
+        }
+    }
+    
+    private boolean number(String expr)
+    {
+        int indexOriginal = this.lastindex;
+        String temp2 = expr.substring(this.lastindex);
+        int index = -1;
+        int index2 = -1;
+        boolean flag=true;
+        for (int i=0;i<temp2.length() && flag;i++)
+        {
+            char c = temp2.charAt(i);
+            if(c == ')' && index!=-1)
+            {
+                flag=false;
+                index2 = i;
+            }
+            if(c == '(' && index == -1)
+                index = i;
+        }
+        
+        /*
+        * Miramos si logramos encontrar los parentesis
+        * Si las encontramos simulamos en afnNUMBER nuestra cadena
+        * Si no reportamos error en la linea
+        */
+        
+        if (index == -1 || index2 == -1 || index2==index )
+            return false;
+        else
+        {
+            //debemos sumarle a nuestros index el ultimo index que reconocio 
+            index += this.lastindex;
+            index2 += this.lastindex;
+            temp2 = "";
+            temp2 += expr.charAt(index+1);
+            this.lastindex = index+1;
+            SimulacionAFN simu = new SimulacionAFN(afnNUMBER.getAuto(),temp2);
+            flag = simu.Simular();
+            while (((this.lastindex+1)<index2) && flag)
+            {
+                this.lastindex++;
+                temp2 = expr.substring(index+1,this.lastindex+1);
+                simu = new SimulacionAFN(afnNUMBER.getAuto(),temp2);
+                flag = simu.Simular();
+            }
+            
+            /*Revisamos si pudo simular toda la expresión
+            *Si la pudo simular volvemos nuestro lastindex el index de segundo parentesis
+            *si no la pudo simular volvemos nuestro lastindex el index con e que entro
+            */
+            if (flag)
+            {
+                this.lastindex = index2;
+                return true;
+            }
+            else
+            {
+                this.lastindex = indexOriginal;
+                return false;
+             }
+        }
+    }
+    
+    public void revisar()
+    {
+        //Revisamos la primera Linea
+        String temp = gramatica.get(contL);
+        if (!checkString("Compiler",temp))
+            errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
+        
+        if (!Ident(temp,false,true))
+            this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
+        else
+            this.ids.add(this.id);
+        
+        if (this.lastindex+1 < temp.length())
+            this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+" "+temp.substring(this.lastindex+1)+" no pudo ser reconocido.");
+        
+        //Comenzamos una nueva linea
+        this.lastindex = 0;
+        contL++;
+        
+        //Realizamos el ScannerSpecification
+        ScannerSpecification();
+        
+        //Revisamos solo END
+        temp = gramatica.get(contL);
+        if (!checkString("End",temp))
+            errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
+        
+        //Buscamos el ident
+        if (!Ident(temp,true,true))
+            this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
+        else
+            this.ids.add(this.id);
+        //Revisamos que el ident de inicio sea igual al de fin
+        if (!ids.get(0).equals(ids.get(ids.size()-1)))
+            errores.add("El ident inicial no coincide con el ident final.");
+        
+        //Buscamos que termine con .
+        temp = gramatica.get(contL);
+        if (!checkString(".",temp.substring(this.lastindex+1)))
+            errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
+        
+    }
+    
+    /****
+     * Debemos buscar CHARACTERS si esto no se encuentra
+     * debemos buscar KEYWORDS
+     * si esto no se encunetra buscamos IGNORE
+     */
     private void ScannerSpecification()
     {
         //CHARACTERS
@@ -229,10 +534,10 @@ public class LectorGramatica {
         boolean flagC = checkString("CHARACTERS",temp.substring(0, temp.length()));
         if (flagC)
         {
-            setDecl();
             //Comenzamos una nueva linea
             this.lastindex = 0;
             contL++;
+            setDecl();
         }
         //KEYWORDS
         
@@ -255,52 +560,200 @@ public class LectorGramatica {
         boolean flagW = checkString("IGNORE",temp.substring(0, temp.length()));
         if (flagW)
         {
-            WhiteSpaceDecl();
+            WhiteSpaceDecl(temp);
+        }
+    }
+    
+    /****
+     * Debemos buscar ident = Set.
+     * Mientras lo que leemos no sea KEYWORDS o IGNORE o End
+     */
+    private void setDecl()
+    {
+        while (!checkString("KEYWORDS",gramatica.get(contL).trim()) && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("End",gramatica.get(contL).trim()))
+        {
+            String temp = gramatica.get(contL);
+        
+            //Revisamos el ident
+            if (!Ident(temp,false,true))
+                this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
+            else
+                this.ids.add(this.id);
+            
+        
+            //Revisamos el igual
+            if (!checkString("=",temp.substring(this.lastindex+1)))
+                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el = para asignar algo.");
+            this.lastindex++;
+            
+            //Revisamos Set
+            Set(temp);
+            
+            //Revisamos el .
+            if (!checkString(".",temp.substring(this.lastindex+1)))
+                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el . para terminar linea.");
+        
+            
+            //Debemos comenzar una nueva linea
+            this.contL++;
+            this.lastindex = 0;
+        }
+    }
+    
+    /****
+     * Debemos buscar un BasicSet
+     * y puede que tambien tengamos mas de un + o -
+     * seguido de otro BasicSet
+     * @param expr 
+     */
+    private void Set(String expr)
+    {
+        BasicSet(expr);
+        if (checkString("-",expr.substring(lastindex+1)))
+        {
+            this.lastindex++;
+            BasicSet(expr);
+        }
+        else
+        {
+            if(checkString("+",expr.substring(lastindex+1)))
+            {
+                this.lastindex++;
+                BasicSet(expr);
+            }
+        }
+        
+    }
+    
+    private void BasicSet(String expr)
+    {
+        int index = this.lastindex;
+        
+        if(string(expr))
+        {
+            System.out.println("String");
+        }
+        else
+        {
+            this.lastindex = index;
+            if (Ident(expr,false,false))
+            {
+                System.out.println("ident");
+            }
+            else 
+            {
+                this.lastindex = index;
+                if (Char(expr))
+                {
+                    System.out.println("char");
+                    int tempindex = this.lastindex;
+                    if(checkString("..",expr.substring(this.lastindex+1)))
+                        if (Char(expr))
+                        {
+                            System.out.println("char");
+                        }
+                        else
+                        {
+                            this.errores.add("Error en linea "+Integer.toString(getIndex(gramatica.get(contL)))+".");
+                        }
+                    else
+                    {
+                        this.lastindex = tempindex;
+                    }
+                }
+                else
+                {
+                    this.lastindex = index;
+                    this.errores.add("Error en linea "+Integer.toString(getIndex(gramatica.get(contL)))+".");
+                }
+            }
+        }
+    }
+    
+    private boolean Char(String expr)
+    {
+        //Revisamos el ident
+        if (caracter(expr))
+        {
+            return true;
+        }
+        else
+            if (checkString("CHR",expr.substring(lastindex+1)))
+            {
+                //if (checkString("(",expr.substring(lastindex)))
+                {
+                    if (number(expr))
+                        return true;
+                    else
+                    {
+                        
+                        return false;
+                    }
+                }
+                //else
+                    //return false;
+            }
+            else
+            {
+                this.errores.add("Error en Linea "+Integer.toString(getIndex(expr))+". Char no reconocido.");
+                return true;
+            }
+    }
+    /****
+     * Debemos buscar ident = string.
+     * Mientras o que leamos no sea IGNORE o End
+     */
+    private void KeywordDecl()
+    {
+        while (!checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("End",gramatica.get(contL).trim()))
+        {
+            //Debemos resetear el lastindex
+            this.lastindex = 0;
+            
+            //Revisamos el ident
+            String temp = gramatica.get(contL);
+            if (!Ident(temp,false,true))
+                this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
+            else
+                this.ids.add(this.id);
+       
+            //Revisamos el igual
+            if (!checkString("=",temp.substring(this.lastindex+1)))
+                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el = para asignar algo.");
+        
+            //Revisamos el string
+            if (!string(temp))
+                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". El string dentro de las \" no fue aceptado.");
+                
+        
+            //Revisamos el .
+            if (!checkString(".",temp.substring(this.lastindex+1)))
+                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el . para terminar linea.");
+            
             //Comenzamos una nueva linea
             this.lastindex = 0;
             contL++;
         }
-    }
-    
-    private void setDecl()
-    {
-        System.out.println("CHAR");
-    }
-    
-    private void KeywordDecl()
-    {
-        //Revisamos el ident
-        System.out.println("Key"); 
-        String temp = gramatica.get(contL);
-        ident(temp,false);
-       
-        //Revisamos el igual
-        if (!checkString("=",temp.substring(this.lastindex+1).trim()))
-           errores.add("Error en Linea "+Integer.toString(contL+1)+".");
         
-        //Revisamos el string
-        String temp2 = temp.substring(this.lastindex+1);
-        int index = -1;
-        int index2 = -1;
-        for (int i=0;i<temp2.length();i++)
-        {
-            if(temp2.charAt(i) == '"' && index == -1)
-                index = i;
-            if(temp2.charAt(i) == '"' && index != -1)
-                index2 = i;
-        }
-        
-        
-        //Revisamos el .
-        
-        
-        //Comenzamos una nueva linea
+        //Debemos resetear el lastindex
         this.lastindex = 0;
-        contL++;
     }
     
-    private void WhiteSpaceDecl()
+    private void WhiteSpaceDecl(String expr)
     {
-        System.out.println("White");
+        this.lastindex = 0;
+        while (checkString("IGNORE",gramatica.get(contL).trim()) && contL<gramatica.size())
+        {
+            //Revisamos el Set
+            Set(expr);
+            
+            //Revisamos el .
+            if (!checkString(".",expr.substring(this.lastindex+1)))
+                errores.add("Error en Linea "+Integer.toString(getIndex(expr))+". Falto el . para terminar linea.");
+            
+            //Comenzamos una nueva linea
+            this.lastindex = 0;
+            contL++;
+        }
     }
 }
