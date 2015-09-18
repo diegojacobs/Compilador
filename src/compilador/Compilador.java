@@ -43,8 +43,7 @@ public class Compilador {
         ArrayList<String> lineasCode = new ArrayList();
         int i = 0;
         for (String linea : ar.getLineas())
-        {
-            
+        { 
             System.out.println(++i +".  "+linea);
             if (!linea.trim().equals(""))
                 lineasCode.add(linea);
@@ -52,12 +51,29 @@ public class Compilador {
         
         LectorGramatica lg = new LectorGramatica(lineasCode,ar.getLineas());
         lg.revisar();
+
         if (!lg.getErrores().isEmpty())
             for (String linea : lg.getErrores())
                 System.out.println(linea);
         else
             System.out.println("No hay errores.");
         
+        for (String equal :lg.getEquals())
+            System.out.println(equal);
+        
+        Archivo ar2 = new Archivo("Program.txt");
+        ar2.muestraContenido();
+        
+        lineasCode = new ArrayList();
+        i = 0;
+        for (String linea : ar2.getLineas())
+        { 
+            System.out.println(++i +".  "+linea);
+            if (!linea.trim().equals(""))
+                lineasCode.add(linea);
+        }
+        
+        LectorPrograma lp = new LectorPrograma(ar2.getLineas(),lg.getEquals());
         
         /********************************************************************/
         /********************************************************************/

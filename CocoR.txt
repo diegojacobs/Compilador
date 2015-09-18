@@ -2,10 +2,10 @@ Compiler Ejemplo
 
 CHARACTERS
 
-letter = 'A' + CHR(95).
+letter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".
 digit = "0123456789".
-letras = 'a'..'z'+letter.
-arrova = CHR(64).
+hexdigit = digit + "ABCDEF".
+face = ':' + CHR(93).
 
 KEYWORDS
 
