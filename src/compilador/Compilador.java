@@ -56,25 +56,30 @@ public class Compilador {
             for (String linea : lg.getErrores())
                 System.out.println(linea);
         else
+        {
             System.out.println("No hay errores.");
         
-        for (String equal :lg.getEquals())
-            System.out.println(equal);
+            for (String equal :lg.getEquals())
+                System.out.println(equal);
         
-        Archivo ar2 = new Archivo("Program.txt");
-        ar2.muestraContenido();
+            Archivo ar2 = new Archivo("Program.txt");
+            ar2.muestraContenido();
         
-        lineasCode = new ArrayList();
-        i = 0;
-        for (String linea : ar2.getLineas())
-        { 
-            System.out.println(++i +".  "+linea);
-            if (!linea.trim().equals(""))
-                lineasCode.add(linea);
+            lineasCode = new ArrayList();
+            i = 0;
+            for (String linea : ar2.getLineas())
+            { 
+                System.out.println(++i +".  "+linea);
+                if (!linea.trim().equals(""))
+                    lineasCode.add(linea);
+            }
+        
+            LectorPrograma lp = new LectorPrograma(ar2.getLineas(),lg.getEquals(),lg.getIds());
+            lp.revisar();
+            
+            for (String res :lp.getRes())
+                System.out.println(res);
         }
-        
-        LectorPrograma lp = new LectorPrograma(ar2.getLineas(),lg.getEquals());
-        
         /********************************************************************/
         /********************************************************************/
         /********************************************************************/

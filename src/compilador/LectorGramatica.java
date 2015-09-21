@@ -34,6 +34,7 @@ public class LectorGramatica {
     //Ultimo indice reconocido
     private int lastindex;
     
+    private boolean ignorar = false;
     //AFN's de terminales
     Thompson afnLETTER;
     Thompson afnNUMBER;
@@ -123,6 +124,14 @@ public class LectorGramatica {
 
     public void setEquals(ArrayList<String> equals) {
         this.equals = equals;
+    }
+
+    public ArrayList<String> getIds() {
+        return ids;
+    }
+
+    public void setIds(ArrayList<String> ids) {
+        this.ids = ids;
     }
     
     //Nos sirve para obtener el verdadero valor de la linea que estamos revisando
@@ -447,6 +456,7 @@ public class LectorGramatica {
         for (int i=0;i<temp2.length() && flag;i++)
         {
             char c = temp2.charAt(i);
+            
             if(c == '\'' && index != -1)
             {
                 flag=false;
@@ -658,22 +668,25 @@ public class LectorGramatica {
     private void Set(String expr)
     {
         BasicSet(expr);
-        if (checkString("-",expr.substring(lastindex+1)))
-        {
-            this.lastindex++;
-            BasicSet(expr);
-        }
-        else
-        {
-            if(checkString("+",expr.substring(lastindex+1)))
+        while (!checkString(".",expr.substring(this.lastindex+1)))
+            if (checkString("-",expr.substring(lastindex+1)))
             {
-                //Debemos concatenare a equal lo que viene
                 this.equal += '.';
                 this.lastindex++;
                 BasicSet(expr);
+                removeChar();
             }
-        }
-        
+            else
+            {
+                if(checkString("+",expr.substring(lastindex+1)))
+                {
+                    //Debemos concatenare a equal lo que viene
+                    this.equal += '.';
+                    this.lastindex++;
+                    BasicSet(expr);
+                }
+            }
+        this.lastindex--;
     }
     /****
      * Debemos ver si nuestra expr recibida es
@@ -695,10 +708,11 @@ public class LectorGramatica {
             this.lastindex = index;
             if (Ident(expr,false,false))
             {
-                if(this.ids.contains(this.id))
+                if(this.ids.contains(this.id) )
                     this.equal += "("+this.equals.get(ids.indexOf(id)-1)+")";
                 else
-                    this.errores.add("El ident "+this.id+" no ha sido declarado.");
+                    if(!this.ignorar)
+                        this.errores.add("El ident "+this.id+" no ha sido declarado.");
             }
             else 
             {
@@ -820,6 +834,7 @@ public class LectorGramatica {
     private void WhiteSpaceDecl(String expr)
     {
         this.lastindex = 0;
+        this.ignorar = true;
         while (contL<gramatica.size() && checkString("IGNORE",gramatica.get(contL).trim()))
         {
             expr = gramatica.get(this.contL);
@@ -943,5 +958,34 @@ public class LectorGramatica {
                 temp += cadena.charAt(i);
         
         return temp;
+    }
+    
+    private void removeChar()
+    {
+        String temp = new String();
+        String temp2 = new String();
+        boolean flag = true;
+        for (int i = this.equal.length()-1;i>0 && flag;i--)
+        {
+            if (this.equal.charAt(i) != '.')
+                temp = this.equal.charAt(i)+temp;
+            else
+            {
+                temp2 = this.equal.substring(0, i);
+                flag= false;
+            }  
+        }
+        String temp3 = new String();
+        for (int i = 0; i<temp2.length();i++)
+        {
+            if (temp2.charAt(i) != '(' && temp2.charAt(i) != ')')
+                if(!temp.contains(temp2.substring(i,i+1)))
+                    temp3 += temp2.charAt(i);
+                else
+                    temp3=temp3;
+            else
+                temp3 += temp2.charAt(i);
+        }
+        this.equal = temp3;
     }
 }

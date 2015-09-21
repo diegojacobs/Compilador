@@ -5,7 +5,6 @@ CHARACTERS
 letter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".
 digit = "0123456789".
 hexdigit = digit + "ABCDEF".
-face = ':' + CHR(93).
 
 KEYWORDS
 
