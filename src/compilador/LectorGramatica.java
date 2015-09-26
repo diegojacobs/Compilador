@@ -681,7 +681,7 @@ public class LectorGramatica {
                 if(checkString("+",expr.substring(lastindex+1)))
                 {
                     //Debemos concatenare a equal lo que viene
-                    this.equal += '.';
+                    this.equal += '|';
                     this.lastindex++;
                     BasicSet(expr);
                 }
@@ -834,13 +834,16 @@ public class LectorGramatica {
     private void WhiteSpaceDecl(String expr)
     {
         this.lastindex = 0;
-        this.ignorar = true;
+        this.ignorar = false;
         while (contL<gramatica.size() && checkString("IGNORE",gramatica.get(contL).trim()))
         {
             expr = gramatica.get(this.contL);
             //Revisamos el Set
+            this.equal = new String();
             Set(expr);
             
+            this.equals.add(this.equal);
+            this.ids.add("IGNORE");
             //Revisamos el .
             if (!checkString(".",expr.substring(this.lastindex+1)))
                 errores.add("Error en Linea "+Integer.toString(getIndex(expr))+". Falto el . para terminar linea.");

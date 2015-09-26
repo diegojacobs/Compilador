@@ -11,8 +11,7 @@ KEYWORDS
 if = "if".
 while = "while".
 
-IGNORE hola.
+IGNORE " ".
 IGNORE "string"+'c'.
-IGNORE CHR(10) - CHR(100).
 
 End Ejemplo.

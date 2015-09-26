@@ -100,6 +100,7 @@ public class LectorPrograma {
             int index = 0; //Numero de caracter que llevamos revisado de la linea
             int index2 = 1;
             int contA = 0;
+            boolean flag = false;
             
             //Debemos reiniciar los ArrayList
             int i=0;
@@ -111,9 +112,11 @@ public class LectorPrograma {
             }
             String line = this.program.get(this.contL);
             String temp = line.substring(index, index2);
+            
             while (index<line.length())
             {
                 temp = line.substring(index, index2);
+                
                 while (contA < this.AFNS.size())
                 {
                     Automata tempA = this.AFNS.get(contA);
@@ -137,7 +140,6 @@ public class LectorPrograma {
                     //si todos son false debo buscar el last mas grande
                     //y el index se vuelve el last mas 1 y el index2 se vuelve el index + 2
                     //si uno es true tomo ese como id
-                    boolean flag = false;
                     for (Boolean flag1 : flags) 
                         if (flag1)
                             flag=true;
@@ -146,13 +148,21 @@ public class LectorPrograma {
                     {
                         int mayor = -1;
                         String id = new String();
-            
+                        ArrayList<String> arrayid = new ArrayList();
                         for (i=0; i<this.AFNS.size();i++)
                         {
-                            if (this.lasts.get(i) > mayor)
+                            if (this.lasts.get(i) == mayor && this.lasts.get(i)>-1)
                             {
                                 mayor = this.lasts.get(i);
                                 id = this.ids.get(i+1);
+                                arrayid.add(id);
+                            }
+                            if (this.lasts.get(i) > mayor)
+                            {
+                                arrayid.clear();
+                                mayor = this.lasts.get(i);
+                                id = this.ids.get(i+1);
+                                arrayid.add(id);
                             }
                         }
                         if (id.equals(""))
@@ -162,7 +172,8 @@ public class LectorPrograma {
                         }
                         else
                         {
-                            this.res.add(line.substring(index,mayor+1) + " = " + id);
+                            for (String tempid:arrayid)
+                                this.res.add(line.substring(index,mayor+1) + " = " + tempid);
                             index=mayor+1;
                             index2=index+1;
                         }
@@ -179,26 +190,40 @@ public class LectorPrograma {
                 }
                 contA=0;
             }
-            
-            //Buscamos que automata la reconocio
-            int mayor = -1;
-            String id = new String();
-            
-            for (i=0; i<this.AFNS.size();i++)
+            if (flag)
             {
-                if(this.flags.get(i))
+                //Buscamos que automata la reconocio
+                int mayor = -1;
+                String id = new String();
+                ArrayList<String> arrayid = new ArrayList();
+            
+                for (i=0; i<this.AFNS.size();i++)
                 {
-                    if (this.lasts.get(i) > mayor)
+                    if(this.flags.get(i))
                     {
-                        mayor = this.lasts.get(i);
-                        id = this.ids.get(i+1);
+                        if (this.lasts.get(i) == mayor && this.lasts.get(i)>-1)
+                            {
+                                mayor = this.lasts.get(i);
+                                id = this.ids.get(i+1);
+                                arrayid.add(id);
+                            }
+                            if (this.lasts.get(i) > mayor)
+                            {
+                                arrayid.clear();
+                                mayor = this.lasts.get(i);
+                                id = this.ids.get(i+1);
+                                arrayid.add(id);
+                            }
                     }
+                }   
+                if (id.equals(""))
+                    this.res.add(temp + " = " + "Error.");
+                else
+                {
+                    for (String tempid:arrayid)
+                        this.res.add(temp + " = " + tempid);
                 }
             }
-            if (id.equals(""))
-                id = "Error";
-            
-            this.res.add(temp + " = " + id);
             this.contL++;
         }
     }

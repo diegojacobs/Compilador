@@ -36,8 +36,11 @@ public class Compilador {
         /********************************************************************/
         /********************************************************************/
         /********************************************************************/
+        System.out.println("Ingrese el nombre del archivo con la especificación léxica en Cocol(CocoR.txt): ");
+        Scanner input = new Scanner(System.in);
+        String txtfile = input.nextLine(); //CocoR.txt
         
-        Archivo ar = new Archivo("CocoR.txt");
+        Archivo ar = new Archivo(txtfile);
         ar.muestraContenido();
         
         ArrayList<String> lineasCode = new ArrayList();
@@ -58,11 +61,16 @@ public class Compilador {
         else
         {
             System.out.println("No hay errores.");
-        
+            System.out.println("El lexer ha sido generado.");
+         
+        //Lab 6
             for (String equal :lg.getEquals())
                 System.out.println(equal);
-        
-            Archivo ar2 = new Archivo("Program.txt");
+            
+            System.out.println("Ingrese el nombre del archivo con el código que desea lexear(Program.txt): ");
+            input = new Scanner(System.in);
+            txtfile = input.nextLine(); //Program.txt
+            Archivo ar2 = new Archivo(txtfile);
             ar2.muestraContenido();
         
             lineasCode = new ArrayList();
@@ -77,6 +85,7 @@ public class Compilador {
             LectorPrograma lp = new LectorPrograma(ar2.getLineas(),lg.getEquals(),lg.getIds());
             lp.revisar();
             
+            System.out.println("Resultado: ");
             for (String res :lp.getRes())
                 System.out.println(res);
         }
