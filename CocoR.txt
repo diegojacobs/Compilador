@@ -1,17 +1,28 @@
-Compiler Ejemplo
+COMPILER Ejemplo
 
 CHARACTERS
 
+tab           = CHR(09).
+lf            = CHR(10).
+cr            = CHR(13).
 letter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".
 digit = "0123456789".
 hexdigit = digit + "ABCDEF".
+
 
 KEYWORDS
 
 if = "if".
 while = "while".
 
-IGNORE " ".
-IGNORE "string"+'c'.
+TOKENS
 
-End Ejemplo.
+id = letter{letter} EXCEPT KEYWORDS.
+number = digit{digit}.
+hexnumber = hexdigit{hexdigit}"(H)".
+hola = "hola"('c')"hola".
+
+IGNORE " ".
+IGNORE tab+lf+cr.
+
+END Ejemplo.

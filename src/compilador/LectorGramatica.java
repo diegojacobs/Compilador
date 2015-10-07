@@ -28,11 +28,20 @@ public class LectorGramatica {
     private ArrayList<String> equals = new ArrayList();
     private String equal = new String();
     
+    //ArrayList con los tokens y su igualdad
+    private ArrayList<String> idstokens = new ArrayList();
+    private ArrayList<String> equalstokens = new ArrayList();
+    private ArrayList<Boolean> ExceptKeys = new ArrayList();
+    
+    //ArrayList con las keywords
+    private ArrayList<String> idskeys = new ArrayList();
+    private ArrayList<String> equalskeys = new ArrayList();
+    
     //Contador de linea donde nos encontramos
     private int contL = 0;
     
     //Ultimo indice reconocido
-    private int lastindex;
+    private int lastindex = 0;
     
     private boolean ignorar = false;
     //AFN's de terminales
@@ -45,13 +54,13 @@ public class LectorGramatica {
     
     
     //Vocabulario de Cocol
-    private final String letter = "(a|b|c|d|e|f|g|h|i|j|k|l|m|n|ñ|o|p|q|r|s|t|u|v|w|x|y|z|A|B|C|D|E|F|G|H|I|J|K|L|M|N|Ñ|O|P|Q|R|S|T|U|V|W|X|Y|Z)";
-    private final String digit = "(0|1|2|3|4|5|6|7|8|9)";
-    private final String any = "("+letter+"|"+digit+"| |#|!|¡|¿|%|/|=|¸|;|:|,|€|<|>|¨|{|}|[|]|^|~|·|½|-|_)";
-    private final String ident = letter + "("+letter+"|"+digit+")*";
-    private final String number = digit+"("+digit+")*";
-    private final String string = "("+any+")*";
-    private final String caracter = "("+any+")";
+    private final String letter = "四a少b少c少d少e少f少g少h少i少j少k少l少m少n少ñ少o少p少q少r少s少t少u少v少w少x少y少z少A少B少C少D少E少F少G少H少I少J少K少L少M少N少Ñ少O少P少Q少R少S少T少U少V少W少X少Y少Z枼";
+    private final String digit = "四0少1少2少3少4少5少6少7少8少9枼";
+    private final String any = "四"+letter+"少"+digit+"少 少#少!少¡少¿少%少/少=少¸少;少:少,少€少<少>少¨少{少}少[少]少^少~少·少½少-少_少)少(少*少.少|少+少?少$少\\少'少\"枼";
+    private final String ident = letter + "四"+letter+"少"+digit+"枼砂";
+    private final String number = digit+"四"+digit+"枼砂";
+    private final String string = "四"+any+"枼砂";
+    private final String caracter = "四"+any+"枼";
     
     public LectorGramatica(ArrayList<String> lineas, ArrayList<String> archivo)
     {
@@ -133,6 +142,46 @@ public class LectorGramatica {
     public void setIds(ArrayList<String> ids) {
         this.ids = ids;
     }
+
+    public ArrayList<String> getIdstokens() {
+        return idstokens;
+    }
+
+    public void setIdstokens(ArrayList<String> idstokens) {
+        this.idstokens = idstokens;
+    }
+
+    public ArrayList<String> getEqualstokens() {
+        return equalstokens;
+    }
+
+    public void setEqualstokens(ArrayList<String> equalstokens) {
+        this.equalstokens = equalstokens;
+    }
+
+    public ArrayList<Boolean> getExceptKeys() {
+        return ExceptKeys;
+    }
+
+    public void setExceptKeys(ArrayList<Boolean> ExceptKeys) {
+        this.ExceptKeys = ExceptKeys;
+    }
+
+    public ArrayList<String> getIdskeys() {
+        return idskeys;
+    }
+
+    public void setIdskeys(ArrayList<String> idskeys) {
+        this.idskeys = idskeys;
+    }
+
+    public ArrayList<String> getEqualskeys() {
+        return equalskeys;
+    }
+
+    public void setEqualskeys(ArrayList<String> equalskeys) {
+        this.equalskeys = equalskeys;
+    }
     
     //Nos sirve para obtener el verdadero valor de la linea que estamos revisando
     public int getIndex(String linea)
@@ -144,7 +193,7 @@ public class LectorGramatica {
     {
         //Revisamos la primera Linea
         String temp = gramatica.get(contL);
-        if (!checkString("Compiler",temp))
+        if (!checkString("COMPILER",temp))
             errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
         
         if (!Ident(temp,false,true))
@@ -170,7 +219,7 @@ public class LectorGramatica {
         {
             //Revisamos solo END
             temp = gramatica.get(contL);
-            if (!checkString("End",temp))
+            if (!checkString("END",temp))
                 errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
 
             //Buscamos el ident
@@ -184,7 +233,7 @@ public class LectorGramatica {
 
             //Buscamos que termine con .
             temp = gramatica.get(contL);
-            if (!checkString(".",temp.substring(this.lastindex+1)))
+            if (!checkString(".",temp.substring(this.lastindex)))
                 errores.add("Error en Linea "+Integer.toString(getIndex(temp))+".");
         }
     }
@@ -215,8 +264,8 @@ public class LectorGramatica {
                 this.lastindex++;
             }
             comp = comp.substring(index);
-        
-            for (int i=0; i<expr.length();i++)
+            
+            for (int i=0; i<expr.length() && igual;i++)
                 if (expr.length()>i && comp.length()>i)
                     if (expr.charAt(i) != comp.charAt(i))
                         igual = false;
@@ -229,67 +278,6 @@ public class LectorGramatica {
             igual = false;
         
         return igual;
-    }
-    
-    /****
-     * Revisamos lis ident 
-     * si son aceptados los guardamos en el arraylist de ids
-     * si es uno repetido reportamos el error
-     * 
-     * @param expr recibimos un String y el mira cual fue el ultimo index que acepto
-     * @param fin nos sirve para ver si es el ident final
-     * 
-     */
-    private void ident(String expr, boolean fin)
-    {
-        String id = "";
-        
-        /*
-        *Buscamos el primer caracter que no sea espacio en blanco
-        *Para empezar a buscar desde ahi
-        */
-        int index = this.lastindex;
-        Character c = expr.charAt(index);
-        while (c == ' ')
-        {
-            index++;
-            c = expr.charAt(index);
-        }
-        
-        /*
-        *Copiamos el index donde debemos empezar a buscar a nuestro ultimo index 
-        *buscamos el primer caracter a simular 
-        *tenemos una bandera para saber cuando deja de poder simular
-        *ademas debemos de asegurarnos de parar tambien si ya no tenemos mas que simular
-        */
-        this.lastindex = index;
-        String temp = expr.substring(index,index+1);
-        SimulacionAFN simu = new SimulacionAFN(afnIDENT.getAuto(),temp);
-        boolean flag = simu.Simular();
-        while (((this.lastindex+1)<expr.length()) && flag)
-        {
-            this.lastindex++;
-            temp = expr.substring(index,this.lastindex+1);
-            simu = new SimulacionAFN(afnIDENT.getAuto(),temp);
-            flag = simu.Simular();
-        }
-        
-        /*Revisamos si pudo simular toda la expresión
-        *Si la pudo simular copiamos lo que simulo al id
-        *si no la pudo simular copiamos lo ultimo que logro simular
-        */
-        if (flag)
-            id = temp;
-        else
-        {
-            this.lastindex--;
-            id=temp.substring(0, temp.length()-1);
-        }
-        
-        if (ids.contains(id) && !fin)
-            this.errores.add("El ident en la linea "+Integer.toString(getIndex(expr))+" ya ha sido usado anteriormente.");
-        
-        ids.add(id);
     }
     
     /****
@@ -333,6 +321,7 @@ public class LectorGramatica {
         SimulacionAFN simu = new SimulacionAFN(afnIDENT.getAuto(),temp);
         flag = simu.Simular();
         if (flag)
+        {
             while (((this.lastindex+1)<expr.length()) && flag)
             {
                 this.lastindex++;
@@ -340,6 +329,7 @@ public class LectorGramatica {
                 simu = new SimulacionAFN(afnIDENT.getAuto(),temp);
                 flag = simu.Simular();
             }
+        }
         else
             return false;
         
@@ -357,9 +347,16 @@ public class LectorGramatica {
                 flag = true;
                 this.id = expr.substring(index, this.lastindex+1);
             }
-        
+            else
+                if (expr.charAt(lastindex) == '(' || expr.charAt(lastindex) == ')' || expr.charAt(lastindex) == '[' || expr.charAt(lastindex) == ']' || expr.charAt(lastindex) == '{' || expr.charAt(lastindex) == '}')
+                {
+                    this.lastindex--;
+                    flag = true;
+                    this.id = expr.substring(index, this.lastindex+1);
+                }
         if (flag)
         {
+            this.lastindex++;
             if (ids.contains(this.id) && !fin && idIzq)
                 this.errores.add("El ident en la linea "+Integer.toString(getIndex(expr))+" ya ha sido usado anteriormente.");
             
@@ -390,17 +387,22 @@ public class LectorGramatica {
         {
             char c = temp2.charAt(i);
             
-            if (index == -1)
-                if (c == '.' || c == '-' || c =='+' || c =='\'')
-                    flag = false;
-            
-            if(c == '"' && index != -1)
+            if (c!='\\')
             {
-                flag=false;
-                index2 = i;
+                if (index == -1)
+                    if (c == '.' || c == '-' || c =='+' || c =='\'' || c=='|' || c=='(' || c=='[' || c=='{')
+                        flag = false;
+            
+                if(c == '"' && index != -1)
+                {
+                    flag=false;
+                    index2 = i;
+                }
+                if(c == '"' && index == -1)
+                    index = i;
             }
-            if(c == '"' && index == -1)
-                index = i;
+            else
+                i++;
         }
         
         /*
@@ -435,7 +437,7 @@ public class LectorGramatica {
             */
             if (flag)
             {
-                this.lastindex = index2;
+                this.lastindex = index2+1;
                 return true;
             }
             else
@@ -450,20 +452,37 @@ public class LectorGramatica {
     {
         int indexOriginal = this.lastindex;
         String temp2 = expr.substring(this.lastindex);
+        
         int index = -1;
         int index2 = -1;
         boolean flag=true;
+        boolean diag = false;
         for (int i=0;i<temp2.length() && flag;i++)
         {
             char c = temp2.charAt(i);
-            
-            if(c == '\'' && index != -1)
+            if (c != '\\')
             {
-                flag=false;
-                index2 = i;
+                if (index == -1)
+                    if (c == '.' || c == '-' || c =='+' || c =='\"' || c=='|' || c=='(' || c=='[' || c=='{')
+                        flag = false;
+            
+                if(c == '\'' && index != -1)
+                {
+                    flag=false;
+                    index2 = i;
+                }
+                if(c == '\'' && index == -1)
+                    index = i;
             }
-            if(c == '\'' && index == -1)
-                index = i;
+            else
+            {
+                i++;
+                diag = true;
+            }
+        }
+        if (diag)
+        {
+            index++;
         }
         
         /*
@@ -491,7 +510,7 @@ public class LectorGramatica {
             */
             if (flag)
             {
-                this.lastindex = index2;
+                this.lastindex = index2+1;
                 return true;
             }
             else
@@ -553,7 +572,7 @@ public class LectorGramatica {
             */
             if (flag)
             {
-                this.lastindex = index2;
+                this.lastindex = index2+1;
                 return true;
             }
             else
@@ -603,6 +622,21 @@ public class LectorGramatica {
                 KeywordDecl();
             }
         }
+        if (contL<gramatica.size())
+        {
+            //Tokens
+            String temp = gramatica.get(contL);
+            temp = temp.trim();
+        
+            boolean flagW = checkString("TOKENS",temp.substring(0, temp.length()));
+            if (flagW)
+            {
+                //Comenzamos una nueva linea
+                this.lastindex = 0;
+                contL++;
+                TokenDecl();
+            }
+        }
         
         if (contL<gramatica.size())
         {
@@ -624,7 +658,7 @@ public class LectorGramatica {
      */
     private void setDecl()
     {
-        while (contL<gramatica.size() && !checkString("KEYWORDS",gramatica.get(contL).trim()) && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("End",gramatica.get(contL).trim()))
+        while (contL<gramatica.size()  && !checkString("TOKENS",gramatica.get(contL).trim()) && !checkString("KEYWORDS",gramatica.get(contL).trim()) && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("END",gramatica.get(contL).trim()))
         {
             String temp = gramatica.get(contL);
         
@@ -632,22 +666,23 @@ public class LectorGramatica {
             if (!Ident(temp,false,true))
                 this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
             else
+            {
                 this.ids.add(this.id);
             
         
-            //Revisamos el igual
-            if (!checkString("=",temp.substring(this.lastindex+1)))
-                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el = para asignar algo.");
-            this.lastindex++;
+                //Revisamos el igual
+                if (!checkString("=",temp.substring(this.lastindex)))
+                    errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el = para asignar algo.");
+                else
+                {
+                    //Revisamos Set
+                    Set(temp);
             
-            //Revisamos Set
-            Set(temp);
-            
-            //Revisamos el .
-            if (!checkString(".",temp.substring(this.lastindex+1)))
-                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el . para terminar linea.");
-        
-            
+                    //Revisamos el .
+                    if (!checkString(".",temp.substring(this.lastindex)))
+                        errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el . para terminar linea.");
+                }
+            }
             //Debemos comenzar una nueva linea
             this.contL++;
             this.lastindex = 0;
@@ -668,24 +703,27 @@ public class LectorGramatica {
     private void Set(String expr)
     {
         BasicSet(expr);
-        while (!checkString(".",expr.substring(this.lastindex+1)))
-            if (checkString("-",expr.substring(lastindex+1)))
+        boolean flag = true;
+        while (!checkString(".",expr.substring(this.lastindex)) && flag)
+            if (checkString("-",expr.substring(lastindex)))
             {
-                this.equal += '.';
-                this.lastindex++;
+                this.equal += '要';
                 BasicSet(expr);
                 removeChar();
             }
             else
-            {
-                if(checkString("+",expr.substring(lastindex+1)))
+                if(checkString("+",expr.substring(lastindex)))
                 {
                     //Debemos concatenare a equal lo que viene
-                    this.equal += '|';
-                    this.lastindex++;
+                    this.equal += '少';
                     BasicSet(expr);
                 }
-            }
+                else
+                {
+                    flag = false;
+                    this.errores.add("Error en Linea "+Integer.toString(getIndex(expr))+".");
+                }
+            
         this.lastindex--;
     }
     /****
@@ -701,15 +739,15 @@ public class LectorGramatica {
         
         if(string(expr))
         {
-            this.equal += saveString(expr.substring(index,this.lastindex));
+            this.equal += saveString(expr.substring(index,this.lastindex-1));
         }
         else
         {
             this.lastindex = index;
-            if (Ident(expr,false,false))
+            if (Ident(expr,false,false) && !this.id.equals("CHR"))
             {
                 if(this.ids.contains(this.id) )
-                    this.equal += "("+this.equals.get(ids.indexOf(id)-1)+")";
+                    this.equal += "四"+this.equals.get(ids.indexOf(id)-1)+"枼";
                 else
                     if(!this.ignorar)
                         this.errores.add("El ident "+this.id+" no ha sido declarado.");
@@ -721,9 +759,9 @@ public class LectorGramatica {
                 if (Char(expr,index))
                 {
                     int tempindex = this.lastindex;
-                    if(checkString("..",expr.substring(this.lastindex+1)))
+                    if(checkString("..",expr.substring(this.lastindex)))
                     {
-                        if (Char(expr,this.lastindex))
+                        if (Char(expr,this.lastindex+1))
                         {
                             String cadena = this.equal.substring(indexequal);
                             String temp = convertChar(cadena);
@@ -751,19 +789,19 @@ public class LectorGramatica {
     
     private boolean Char(String expr, int index)
     {
-        //Revisamos el ident
+        //Revisamos el caracter
         if (caracter(expr))
         {
-            this.equal += saveCaracter(expr.substring(index,this.lastindex));
+            this.equal += saveCaracter(expr.substring(index,this.lastindex-1));
             return true;
         }
         else
-            if (checkString("CHR",expr.substring(lastindex+1)))
+            if (checkString("CHR",expr.substring(this.lastindex)))
             {
                 index = this.lastindex+2;
                 if (number(expr))
                 {
-                    this.equal += saveCHR(expr.substring(index, this.lastindex));
+                    this.equal += saveCHR(expr.substring(index, this.lastindex-1));
                     return true;
                 }
                 else
@@ -784,7 +822,7 @@ public class LectorGramatica {
      */
     private void KeywordDecl()
     {
-        while (contL<gramatica.size() && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("End",gramatica.get(contL).trim()))
+        while (contL<gramatica.size() && !checkString("TOKENS",gramatica.get(contL).trim()) && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("END",gramatica.get(contL).trim()))
         {
             //Debemos resetear el lastindex
             this.lastindex = 0;
@@ -794,36 +832,265 @@ public class LectorGramatica {
             if (!Ident(temp,false,true))
                 this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
             else
-                this.ids.add(this.id);
+            {
+                this.ids.add(this.id);//borrar
+                this.idskeys.add(this.id);
        
-            //Revisamos el igual
-            if (!checkString("=",temp.substring(this.lastindex+1)))
-                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el = para asignar algo.");
+                //Revisamos el igual
+                if (!checkString("=",temp.substring(this.lastindex)))
+                    errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el = para asignar algo.");
+                else
+                {
+                    int index = this.lastindex;
+                    
+                    //Revisamos el string
+                    if (!string(temp))
+                        errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". El string no fue aceptado.");
+                    else
+                    {
+                        this.equal += saveString(temp.substring(index,this.lastindex-1));
         
-            int index = this.lastindex;
-            //Revisamos el string
-            if (!string(temp))
-                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". El string dentro de las \" no fue aceptado.");
-            else
-                this.equal += saveString(temp.substring(index,this.lastindex));
-        
-            //Revisamos el .
-            if (!checkString(".",temp.substring(this.lastindex+1)))
-                errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el . para terminar linea.");
-            
+                        //Revisamos el .
+                        if (!checkString(".",temp.substring(this.lastindex)))
+                            errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el . para terminar linea.");
+                
+                    }
+                }
+            }
             //Comenzamos una nueva linea
             this.lastindex = 0;
             contL++;
             
             //Guardamos la igualdad
-            this.equals.add(this.equal);
+            this.equalskeys.add(this.equal);
+            this.equals.add(this.equal);//borrar
             this.equal = new String();
         }
         
         //Debemos resetear el lastindex
         this.lastindex = 0;
     }
+    /****
+     * Comenzamos a revisar la declaracion de tokens
+     * paramos hasta que encontremos un IGNORE
+     */
+    private void TokenDecl()
+    {
+        while (contL<gramatica.size() && !checkString("IGNORE",gramatica.get(contL).trim()) && !checkString("END",gramatica.get(contL).trim()))
+        {
+            //Debemos resetear el lastindex
+            this.lastindex = 0;
+            
+            //Copiamos la proxima linea
+            String temp = gramatica.get(contL);
+            
+            //Revisamos el ident
+            if (!Ident(temp,false,false))
+                this.errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Ident no reconocido.");
+            else
+            {
+                //Revisamos el igual
+                if (checkString("=",temp.substring(this.lastindex)))
+                {
+                    if (this.ids.contains(this.id) || this.idstokens.contains(this.id))
+                    {
+                        this.errores.add("El ident en la linea "+Integer.toString(getIndex(temp))+" ya ha sido usado anteriormente.");
+                    }
+                    //agregamos el ident a tokens
+                    this.idstokens.add(this.id);
+             
+                    TokenExpr(temp);
+                    //Revisamos EXCEPT KEYWORDS
+                    if (checkString("EXCEPT KEYWORDS",temp.substring(this.lastindex)))
+                    {
+                        this.ExceptKeys.add(true);
+                    }
+                    else
+                    {   
+                        this.ExceptKeys.add(false);
+                    }
+                }
+                else
+                {
+                    //agregamos el ident a tokens
+                    this.idstokens.add(this.id);
+                    
+                    //Si no hubo igual revisamos si ha EXCEPT KEYWORDS
+                    if (checkString("EXCEPT KEYWORDS",temp.substring(this.lastindex)))
+                    {
+                        this.ExceptKeys.add(true);
+                    }
+                    else
+                        this.ExceptKeys.add(false);
+                    
+                    //Debemos buscar la igualdad del ident y agregarla
+                    if (this.ids.contains(this.id))
+                    {
+                        this.equal += "四"+this.equals.get(ids.indexOf(id)-1)+"枼";
+                    }
+                    else
+                        if (this.idstokens.contains(this.id))
+                        {
+                            this.equal += "四"+this.equalstokens.get(idstokens.indexOf(id))+"枼";
+                        }
+                        else
+                            this.errores.add("El ident en la linea "+Integer.toString(getIndex(temp))+". No ha sido declarado." );
+                    
+                }
+            
+                //Revisamos el .
+                if (!checkString(".",temp.substring(this.lastindex)))
+                    errores.add("Error en Linea "+Integer.toString(getIndex(temp))+". Falto el . para terminar linea.");
+            }
+            
+            //Comenzamos una nueva linea
+            this.lastindex = 0;
+            contL++;
+            
+            //Debemos agregar a equalstokens la igualdad
+            this.equalstokens.add(this.equal);
+            this.equal = new String();
+        }
+        //Debemos resetear el lastindex
+        this.lastindex = 0;
+    }
     
+    private void TokenExpr(String expr)
+    {
+        TokenTerm(expr);
+        while (checkString("|",expr.substring(this.lastindex)))
+        {
+            this.equal += '少'; //ponemos el | a nuestra expresión
+            TokenTerm(expr);
+        }
+    }
+    
+    private void TokenTerm(String expr)
+    {
+        TokenFactor(expr);
+        boolean flag = true;
+        while (flag && !checkString("|",expr.substring(this.lastindex)) && !checkString(".",expr.substring(this.lastindex)) && !checkString("}",expr.substring(this.lastindex)) && !checkString(")",expr.substring(this.lastindex)) && !checkString("]",expr.substring(this.lastindex)))
+        {
+            int index = this.lastindex;
+            if (!checkString("EXCEPT KEYWORDS",expr.substring(this.lastindex)))
+            {
+                this.equal += '要';
+                TokenFactor(expr);
+            }
+            else
+            {
+                flag = false;
+                this.lastindex = index;
+            }                
+        }
+        this.lastindex--;
+    }
+    
+    private void TokenFactor(String expr)
+    {
+        if (checkString("(",expr.substring(this.lastindex)))
+        {
+            this.equal += '四';//ponemos el ( a nuestra expresión
+            TokenExpr(expr);
+            if (!checkString(")",expr.substring(this.lastindex)))
+            {
+                this.errores.add("Error en la Linea "+Integer.toString(getIndex(expr))+". Hace falta )");
+            }
+            else
+                this.equal += '枼';//ponemos el ) a nuestra expresión
+        }
+        else
+        {
+            if (checkString("[",expr.substring(this.lastindex)))
+            {
+                this.equal += '四';//ponemos el ( a nuestra expresión
+                this.equal += '四';//ponemos el ( a nuestra expresión
+                TokenExpr(expr);
+                if (!checkString("]",expr.substring(this.lastindex)))
+                {
+                    this.errores.add("Error en la Linea "+Integer.toString(getIndex(expr))+". Hace falta ]");
+                }
+                else
+                {
+                    this.equal += '枼';//ponemos el ) a nuestra expresión
+                    this.equal += '少';//ponemos el | a nuestra expresión
+                    this.equal += '永';//ponemos el epsilon a nuestra expresión
+                    this.equal += '枼';//ponemos el ) a nuestra expresión
+                }
+            }
+            else
+                if (checkString("{",expr.substring(this.lastindex)))
+                {
+                    this.equal += '四';//ponemos el ( a nuestra expresión
+                    TokenExpr(expr);
+                    if (!checkString("}",expr.substring(this.lastindex)))
+                    {
+                        this.errores.add("Error en la Linea "+Integer.toString(getIndex(expr))+". Hace falta }");
+                    }
+                    else
+                    {
+                        this.equal += '枼';//ponemos el ) a nuestra expresión
+                        this.equal += '砂';//ponemos el * a nuestra expresión
+                    }
+                }
+                else
+                {
+                    if (!Symbol(expr))
+                    {
+                        this.errores.add("Error en Linea "+Integer.toString(getIndex(expr)));
+                    }
+                }
+        }
+    }
+    
+    private boolean Symbol(String expr)
+    {
+        int index = this.lastindex;
+        
+        if (Ident(expr,false,false))
+        {
+            if(this.ids.contains(this.id))
+            {
+                this.equal += "四"+this.equals.get(ids.indexOf(id)-1)+"枼";
+                return true;
+            }
+            else
+                if (this.idstokens.contains(this.id))
+                {
+                    this.equal += "四"+this.equalstokens.get(ids.indexOf(id))+"枼";
+                    return true; 
+                }
+                else
+                {
+                    this.errores.add("El ident "+this.id+" no ha sido declarado.");
+                    return true;
+                }
+        }
+        else
+        {
+            this.lastindex = index;
+            
+            if(string(expr))
+            {
+                this.equal += saveString(expr.substring(index,this.lastindex-1));
+                return true;
+            }
+            else 
+            {
+                this.lastindex = index;
+                int indexequal = this.equal.length();
+                if (caracter(expr))
+                {
+                    this.equal += saveCaracter(expr.substring(index,this.lastindex-1));
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
     /****
      * Recibimos una expr que contine una linea de la gramatica
      * revisamos que contenga la palabra IGNORE y que no nos pasemos del numero de lineas
@@ -844,8 +1111,11 @@ public class LectorGramatica {
             
             this.equals.add(this.equal);
             this.ids.add("IGNORE");
+            
+            this.equalstokens.add(this.equal);
+            this.idstokens.add("IGNORE");
             //Revisamos el .
-            if (!checkString(".",expr.substring(this.lastindex+1)))
+            if (!checkString(".",expr.substring(this.lastindex)))
                 errores.add("Error en Linea "+Integer.toString(getIndex(expr))+". Falto el . para terminar linea.");
             
             //Comenzamos una nueva linea
@@ -863,9 +1133,21 @@ public class LectorGramatica {
      */
     private String saveString(String cadena)
     {
-        String temp = "(";
+        String temp = "四";
         int index = cadena.indexOf("\"");
-        temp += cadena.substring(index+1)+")";
+        cadena = cadena.substring(index+1);
+        for (int i=0;i<cadena.length();i++)
+        {
+            char c = cadena.charAt(i);
+            if (c=='\\')
+            {
+                i++;
+                temp+=cadena.charAt(i);
+            }
+            else
+                temp+=c;
+        }
+        temp += "枼";
         return temp;
     }
     
@@ -878,9 +1160,21 @@ public class LectorGramatica {
      */
     private String saveCaracter(String cadena)
     {
-        String temp = "(";
+        String temp = "四";
         int index = cadena.indexOf("'");
-        temp += cadena.substring(index+1)+")";
+        cadena = cadena.substring(index+1);
+        for (int i=0;i<cadena.length();i++)
+        {
+            char c = cadena.charAt(i);
+            if (c=='\\')
+            {
+                i++;
+                temp+=cadena.charAt(i);
+            }
+            else
+                temp+=c;
+        }
+        temp += "枼";
         return temp;
     }
     
@@ -893,9 +1187,9 @@ public class LectorGramatica {
      */
     private String saveCHR(String cadena)
     {
-        String temp = "(";
+        String temp = "四";
         char c = (char)Integer.parseInt(cadena);
-        temp += c+")";
+        temp += c+"枼";
         return temp;
     }
     
@@ -909,19 +1203,19 @@ public class LectorGramatica {
      */
     private String convertChar(String cadena)
     {
-        String temp = "(";
+        String temp = "四";
         boolean flag=true;
         int index = -1;
         int index2 = -1;
         for (int i=0;i<cadena.length() && flag;i++)
         {
             char c = cadena.charAt(i);
-            if(c == ')' && index!=-1)
+            if(c == '枼' && index!=-1)
             {
                 flag=false;
                 index2 = i;
             }
-            if(c == '(' && index == -1)
+            if(c == '四' && index == -1)
                 index = i;
         }    
         
@@ -932,7 +1226,7 @@ public class LectorGramatica {
         {
             char c = cadena.charAt(i);
             
-            if(c == '(' && index3 == -1)
+            if(c == '四' && index3 == -1)
             {
                 flag = false;
                 index3 = i;
@@ -942,7 +1236,7 @@ public class LectorGramatica {
         
         for (int i = (int)c1;i<=(int)c2;i++)
             temp += (char)i;
-        temp += ")";
+        temp += "枼";
         
         return temp;
     }
@@ -952,9 +1246,9 @@ public class LectorGramatica {
         String temp = new String();
         
         for (int i=0;i<cadena.length();i++)
-            if (cadena.charAt(i)!= '(' && cadena.charAt(i) != '|' && cadena.charAt(i) != '.' && cadena.charAt(i) != ')' && i+1<cadena.length())
-                if (cadena.charAt(i+1) != ')'&& cadena.charAt(i+1) != '|' && cadena.charAt(i+1) != '.')
-                    temp += cadena.charAt(i)+"|";
+            if (cadena.charAt(i)!= '四' && cadena.charAt(i) != '少' && cadena.charAt(i) != '要' && cadena.charAt(i) != '枼' && i+1<cadena.length())
+                if (cadena.charAt(i+1) != '枼'&& cadena.charAt(i+1) != '少' && cadena.charAt(i+1) != '要')
+                    temp += cadena.charAt(i)+"少";
                 else
                     temp+=cadena.charAt(i);
             else
@@ -970,7 +1264,7 @@ public class LectorGramatica {
         boolean flag = true;
         for (int i = this.equal.length()-1;i>0 && flag;i--)
         {
-            if (this.equal.charAt(i) != '.')
+            if (this.equal.charAt(i) != '要')
                 temp = this.equal.charAt(i)+temp;
             else
             {
@@ -981,7 +1275,7 @@ public class LectorGramatica {
         String temp3 = new String();
         for (int i = 0; i<temp2.length();i++)
         {
-            if (temp2.charAt(i) != '(' && temp2.charAt(i) != ')')
+            if (temp2.charAt(i) != '四' && temp2.charAt(i) != '枼')
                 if(!temp.contains(temp2.substring(i,i+1)))
                     temp3 += temp2.charAt(i);
                 else

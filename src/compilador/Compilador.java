@@ -11,7 +11,6 @@ package compilador;
  */
 
 //Caracteres especiales
-//@ es epsilon
 //$ sirve para operaciones unarias en el arbol
 //# sirve para construccion directa del AFD
 
@@ -28,6 +27,16 @@ public class Compilador {
     public static void main(String[] args) throws UnsupportedEncodingException, IOException {
         // TODO code application logic here
         
+        /* NUEVOS CARACTERES DE AUTOMATAS
+        System.out.println((int)'四'+" = (");
+        System.out.println((int)'枼'+" = )");
+        System.out.println((int)'北'+" = +");
+        System.out.println((int)'要'+" = .");
+        System.out.println((int)'少'+" = |");
+        System.out.println((int)'永'+" = @");
+        System.out.println((int)'背'+" = ?");
+        System.out.println((int)'砂'+" = *");        
+        */
         
         /********************************************************************/
         /********************************************************************/
@@ -36,6 +45,7 @@ public class Compilador {
         /********************************************************************/
         /********************************************************************/
         /********************************************************************/
+          
         System.out.println("Ingrese el nombre del archivo con la especificación léxica en Cocol(CocoR.txt): ");
         Scanner input = new Scanner(System.in);
         String txtfile = input.nextLine(); //CocoR.txt
@@ -67,6 +77,10 @@ public class Compilador {
             for (String equal :lg.getEquals())
                 System.out.println(equal);
             
+            for (String equal:lg.getEqualstokens())
+                System.out.println(equal);
+            
+            
             System.out.println("Ingrese el nombre del archivo con el código que desea lexear(Program.txt): ");
             input = new Scanner(System.in);
             txtfile = input.nextLine(); //Program.txt
@@ -82,7 +96,7 @@ public class Compilador {
                     lineasCode.add(linea);
             }
         
-            LectorPrograma lp = new LectorPrograma(ar2.getLineas(),lg.getEquals(),lg.getIds());
+            LectorPrograma lp = new LectorPrograma(ar2.getLineas(),lg.getEqualstokens(),lg.getIdstokens(), lg.getIdskeys(),lg.getExceptKeys(), lg.getEqualskeys());
             lp.revisar();
             
             System.out.println("Resultado: ");
