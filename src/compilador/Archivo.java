@@ -60,7 +60,7 @@ public class Archivo {
 
             bw.close();
 
-        }catch(IOException e){}
+        }catch(IOException e){System.out.println("No se pudo excribir en el archivo.");}
     }
     
     public void agregar(String texto)
@@ -83,10 +83,10 @@ public class Archivo {
 
             bw.close();
 
-        }catch(IOException e){}
+        }catch(IOException e){System.out.println("No se pudo excribir en el archivo.");}
     }
     
-    void muestraContenido() throws FileNotFoundException, IOException {
+    public void muestraContenido() throws FileNotFoundException, IOException {
       String cadena;
       FileReader f = new FileReader(doc);
       BufferedReader buffer = new BufferedReader(f);
@@ -94,5 +94,38 @@ public class Archivo {
           lineas.add(cadena);
       }
       buffer.close();
+    }
+    
+    public void createFile(String name,ArrayList lista) throws IOException
+    {
+        final File parentDir = new File("Lexer");
+        parentDir.mkdir();
+        final String hash = name;
+        final String fileName = hash + ".comp";
+        final File file = new File(parentDir,fileName);
+        file.createNewFile(); // Creates file crawl_html/abc.txt
+        
+        String texto = new String();
+        for (Object temp : lista) 
+        {
+            texto +=temp.toString()+"\r\n";
+        }
+        
+        File f;
+        f = new File(parentDir, fileName);
+        try{
+            FileWriter w = new FileWriter(f);
+            
+            BufferedWriter bw = new BufferedWriter(w);
+
+            PrintWriter wr = new PrintWriter(bw);  
+
+            wr.write(texto); 
+            
+            wr.close();
+
+            bw.close();
+
+        }catch(IOException e){System.out.println("No se pudo excribir en el archivo.");}
     }
 }

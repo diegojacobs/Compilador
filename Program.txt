@@ -1,4 +1,4 @@
-while2A(H)g5% 
+ while 2A(H) g5% 
 c
 if
 9

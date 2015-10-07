@@ -209,7 +209,7 @@ public class LectorPrograma {
                         //buscamos el index del id;
                         this.indexid=this.ids.indexOf(this.id);
                         //buscamos si tiene except keywords en la posicion del id seleccionado
-                        if (this.exception.get(this.indexid))
+                        if (!arrayid.contains("IGNORE") && this.exception.get(this.indexid))
                         {
                             //Simulamos lo aceptado en los automatas de keywords
                             //Si es aceptado en uno es cambiado el ident
@@ -289,7 +289,7 @@ public class LectorPrograma {
                 this.indexid=this.ids.indexOf(this.id);
                 
                 //buscamos si tiene except keywords en la posicion del id seleccionado
-                if (this.exception.get(this.indexid))
+                if (!arrayid.contains("IGNORE") && this.exception.get(this.indexid))
                 {
                     contA = 0;
                     while (contA < this.AFNSKeys.size())

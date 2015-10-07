@@ -14,6 +14,7 @@ package compilador;
 //$ sirve para operaciones unarias en el arbol
 //# sirve para construccion directa del AFD
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -73,14 +74,27 @@ public class Compilador {
             System.out.println("No hay errores.");
             System.out.println("El lexer ha sido generado.");
          
+            //creamos un archivo con los ident de tokens
+            Archivo idtokens = new Archivo("tokensId.comp");
+            idtokens.createFile("tokensId", lg.getIdstokens());
+            
+            //Creamos un archivo con todas las expresiones para los automatas de tokens
+            Archivo tokens = new Archivo("tokens.comp");
+            tokens.createFile("tokens", lg.getEqualstokens());
+            
+            //Creamos un archivo con las exeptions keywords
+            Archivo exceptions = new Archivo("exceptions.comp");
+            exceptions.createFile("exceptions", lg.getExceptKeys());
+            
+            //Creamos un archivo con los ident de keywords
+            Archivo idkeys = new Archivo("keysId.comp");
+            idkeys.createFile("keysId", lg.getIdskeys());
+  
+            //Creamos un archivo con todas las expresiones para los automatas de keywords
+            Archivo keywords = new Archivo("keywords.comp");
+            keywords.createFile("keywords", lg.getEqualskeys());
+            
         //Lab 6
-            for (String equal :lg.getEquals())
-                System.out.println(equal);
-            
-            for (String equal:lg.getEqualstokens())
-                System.out.println(equal);
-            
-            
             System.out.println("Ingrese el nombre del archivo con el código que desea lexear(Program.txt): ");
             input = new Scanner(System.in);
             txtfile = input.nextLine(); //Program.txt

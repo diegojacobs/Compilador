@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Archivo {
     private String doc = new String();
-    private ArrayList<String> lineas = new ArrayList();
+    private ArrayList lineas = new ArrayList();
     
     public Archivo(String txt)
     {
@@ -28,11 +28,11 @@ public class Archivo {
         this.doc = doc;
     }
 
-    public ArrayList<String> getLineas() {
+    public ArrayList getLineas() {
         return lineas;
     }
     
-    public String getLineas(int index) {
+    public Object getLineas(int index) {
         return lineas.get(index);
     }
 
