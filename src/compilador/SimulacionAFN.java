@@ -74,7 +74,7 @@ public class SimulacionAFN<T> {
         que se encuentre entre los estados visitados el estado de donde fue llamado
         o estados donde fue llamado
         */
-        if (Objects.equals("@", c)) 
+        if (Objects.equals("永", c)) 
             if (!visitados.contains(estado))
                 visitados.add(estado);
         
@@ -114,7 +114,7 @@ public class SimulacionAFN<T> {
         que se encuentre entre los estados visitados el estado de donde fue llamado
         o estados donde fue llamado
         */
-        if (Objects.equals("@", c))
+        if (Objects.equals("永", c))
             for (Estado estado : estados) 
                 if (!visitados.contains(estado))
                     visitados.add(estado);
@@ -138,7 +138,7 @@ public class SimulacionAFN<T> {
             Estado estado = st.pop();
             
             ArrayList<Estado> temp;
-            temp = simple_move(estado, (T) "@");
+            temp = simple_move(estado, (T) "永");
             
             revisados.add(estado);
             for (Estado state : temp)

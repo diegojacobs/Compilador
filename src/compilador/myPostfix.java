@@ -294,7 +294,7 @@ public class myPostfix {
                             stack.push(c3);
                         }
                         stack.push('少');
-                        stack.push('@');
+                        stack.push('永');
                         stack.push('枼');
                     }
                     //si no solo tomamos el ultimo caracter
@@ -314,7 +314,7 @@ public class myPostfix {
                             stack.push(c3);
                         }
                         stack.push('少');
-                        stack.push('@');  
+                        stack.push('永');  
                         stack.push('枼');
                     }
                 }

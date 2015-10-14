@@ -6,6 +6,7 @@
 package lexer;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 /**
  *
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 public class Archivo {
     private String doc = new String();
     private ArrayList lineas = new ArrayList();
+    private char[] text;
     
     public Archivo(String txt)
     {
@@ -38,6 +40,14 @@ public class Archivo {
 
     public void setLineas(String linea) {
         this.lineas.add(linea);
+    }
+
+    public char[] getText() {
+        return text;
+    }
+
+    public void setText(char[] text) {
+        this.text = text;
     }
     
     public void escribir(String texto)
@@ -90,9 +100,13 @@ public class Archivo {
       String cadena;
       FileReader f = new FileReader(doc);
       BufferedReader buffer = new BufferedReader(f);
+      String txt = new String();
       while((cadena = buffer.readLine())!=null) {
           lineas.add(cadena);
+          txt += cadena+"文";
       }
+      char[] array = txt.toCharArray();
+      this.text = array;
       buffer.close();
     }
 }

@@ -144,7 +144,7 @@ public class Thompson<T>{
             if (cont == auto2.getEstados().size()-1)
             {
                 Estado origen = auto2.getFin().get(0);
-                temp.setEnlace(new Transicion(origen,auto1.getInicio(),"@"));
+                temp.setEnlace(new Transicion(origen,auto1.getInicio(),"永"));
             }
            
             auto_res.setEstado(temp);
@@ -179,14 +179,14 @@ public class Thompson<T>{
         y concatenamos el estado inicial de nuestro segund objeto con una epsilon
         */
         Estado nuevoInicio = new Estado(0);
-        nuevoInicio.setEnlace(new Transicion(nuevoInicio,auto2.getInicio(),"@"));
+        nuevoInicio.setEnlace(new Transicion(nuevoInicio,auto2.getInicio(),"永"));
         
         /*
         Tambien debemos cambiar el inicio de nuestro otro objeto
         por lo que buscamos su inicio y ahora lo conectamos con el nuevo mediante epsilon
         */
         Estado ant_ini = auto1.getInicio();
-        nuevoInicio.getEnlaces().add(new Transicion(nuevoInicio, ant_ini, "@"));
+        nuevoInicio.getEnlaces().add(new Transicion(nuevoInicio, ant_ini, "永"));
         
 
         hambu.setEstado(nuevoInicio);
@@ -229,8 +229,8 @@ public class Thompson<T>{
         Estado fin_ant = auto1.getFin().get(0);
         Estado fin_ant2 = auto2.getFin().get(0);
          
-        fin_ant.getEnlaces().add(new Transicion(fin_ant, nuevoFin, "@"));
-        fin_ant2.getEnlaces().add(new Transicion(fin_ant2,nuevoFin,"@"));
+        fin_ant.getEnlaces().add(new Transicion(fin_ant, nuevoFin, "永"));
+        fin_ant2.getEnlaces().add(new Transicion(fin_ant2,nuevoFin,"永"));
             
         return hambu;
     }
@@ -249,7 +249,7 @@ public class Thompson<T>{
         barco.setInicio(nuevoInicio);
         
         Estado ant_ini = auto1.getInicio();
-        nuevoInicio.getEnlaces().add(new Transicion(nuevoInicio, ant_ini, "@"));
+        nuevoInicio.getEnlaces().add(new Transicion(nuevoInicio, ant_ini, "永"));
         
         //Agregamos todos los estados de nuestro objeto sacado del stack
         for (int i=0; i < auto1.getEstados().size(); i++) 
@@ -271,11 +271,11 @@ public class Thompson<T>{
         Estado ant_fin = auto1.getFin().get(0);
         
        
-        nuevoInicio.getEnlaces().add(new Transicion(nuevoInicio, nuevoFin, "@"));
-        ant_fin.getEnlaces().add(new Transicion(ant_fin, nuevoFin, "@"));
+        nuevoInicio.getEnlaces().add(new Transicion(nuevoInicio, nuevoFin, "永"));
+        ant_fin.getEnlaces().add(new Transicion(ant_fin, nuevoFin, "永"));
         
         //Ahora debemos enlasar nuestro anterior inicio con nuestro anterior fin con epsilon
-        ant_fin.getEnlaces().add(new Transicion(ant_fin, ant_ini,"@"));
+        ant_fin.getEnlaces().add(new Transicion(ant_fin, ant_ini,"永"));
         
         return barco;
     }

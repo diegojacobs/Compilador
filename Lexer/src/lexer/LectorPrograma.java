@@ -192,6 +192,7 @@ public class LectorPrograma {
                         {
                             this.res.add(line.substring(index) + " = " + "Error.");
                             index=index2+1;
+                            this.id = "Error";
                         }
                         else
                         {
@@ -207,9 +208,12 @@ public class LectorPrograma {
                         }
                         
                         //buscamos el index del id;
-                        this.indexid=this.ids.indexOf(this.id);
+                        if (!this.id.equals("Error"))
+                            this.indexid=this.ids.indexOf(this.id);
+                        else
+                            this.indexid = -1;
                         //buscamos si tiene except keywords en la posicion del id seleccionado
-                        if (!arrayid.contains("IGNORE") && this.exception.get(this.indexid).equals("true"))
+                        if (this.indexid != -1 && !arrayid.contains("IGNORE") && this.exception.get(this.indexid).equals("true"))
                         {
                             //Simulamos lo aceptado en los automatas de keywords
                             //Si es aceptado en uno es cambiado el ident
@@ -286,10 +290,13 @@ public class LectorPrograma {
                         }
                 }
                 //buscamos el index del id;
-                this.indexid=this.ids.indexOf(this.id);
+                if (!this.id.equals("Error"))
+                    this.indexid=this.ids.indexOf(this.id);
+                else
+                    this.indexid = -1;
                 
                 //buscamos si tiene except keywords en la posicion del id seleccionado
-                if (!arrayid.contains("IGNORE") && this.exception.get(this.indexid).equals("true"))
+                if (this.indexid != -1 && !arrayid.contains("IGNORE") && this.exception.get(this.indexid).equals("true"))
                 {
                     contA = 0;
                     while (contA < this.AFNSKeys.size())
@@ -307,8 +314,151 @@ public class LectorPrograma {
                     }
                 }
             }
+            
+            //Simulamos el cambio de linea
+            //Si es aceptado cambiamos de linea
+            //Si no es aceptado mostramos mensaje de que no se puede hacer un cambiod e linea.
+            
             this.contL++;
         }
+    }
+    
+    public void check(char[] texto)
+    {
+        int index = 0; //Numero de caracter que llevamos revisado de la linea
+        int index2 = 1;
+        int contA = 0;
+        boolean flag = false;
+            
+        //Debemos reiniciar los ArrayList
+        int i=0;
+        for (Automata AFNS1 : this.AFNS) 
+        {
+            this.lasts.set(i,-1);
+            this.flags.set(i,false);
+            i++;
+        }
+        
+        String line = texto.toString();
+        String temp = line.substring(index, index2);
+            
+        while (index<line.length())
+        {
+            temp = line.substring(index, index2);
+                
+            while (contA < this.AFNS.size())
+            {
+                Automata tempA = this.AFNS.get(contA);
+                SimulacionAFN simu = new SimulacionAFN(tempA,temp);
+                if (simu.Simular())
+                {
+                    this.flags.set(contA, Boolean.TRUE);
+                    this.lasts.set(contA,index2-1);
+                }
+                else
+                {
+                    this.flags.set(contA, Boolean.FALSE);
+                }
+                contA++;
+            }
+            if (index2+1 <= line.length())
+                index2++;
+            else
+            {
+                //revisar si todos los flags son false
+                //si todos son false debo buscar el last mas grande
+                //y el index se vuelve el last mas 1 y el index2 se vuelve el index + 2
+                //si uno es true tomo ese como id
+                for (Boolean flag1 : flags) 
+                    if (flag1)
+                        flag=true;
+                  
+                //Si ninguno logro simular toda la cadena buscamos cual fue el ultimo caracter simulado
+                if(!flag)
+                {
+                    //Buscamos el automata que haya aceptado el mayor numero de caracteres
+                    //Y buscamos el ident perteneciente a este automata
+                    int mayor = -1;
+                    String id = new String();
+                    ArrayList<String> arrayid = new ArrayList();
+                    for (i=0; i<this.AFNS.size();i++)
+                    {
+                        if (this.lasts.get(i) == mayor && this.lasts.get(i)>-1)
+                        {
+                            mayor = this.lasts.get(i);
+                            id = this.ids.get(i);
+                            arrayid.add(id);
+                        }
+                        if (this.lasts.get(i) > mayor)
+                        {
+                            arrayid.clear();
+                            mayor = this.lasts.get(i);
+                            id = this.ids.get(i);
+                            arrayid.add(id);
+                        }
+                    }
+                        
+                    //Si no se encontro ningun identificador para la cadena aceptada
+                    //Motramos la cadena como error
+                    //Si no mostamos el ident encontrado
+                    if (arrayid.isEmpty())
+                    {
+                        this.res.add(line.substring(index) + " = " + "Error.");
+                        index=index2+1;
+                    }
+                    else
+                    {
+                        if (!arrayid.contains("IGNORE"))
+                            for (String tempid:arrayid)
+                            {
+                                this.id = tempid;
+                                temp=line.substring(index,mayor+1);
+                                this.res.add(temp + " = " + tempid);
+                            }
+                        index=mayor+1;
+                        index2=index+1;
+                    }
+                       
+                    //buscamos el index del id;
+                    this.indexid=this.ids.indexOf(this.id);
+                    //buscamos si tiene except keywords en la posicion del id seleccionado
+                    if (!arrayid.contains("IGNORE") && this.exception.get(this.indexid).equals("true"))
+                    {
+                        //Simulamos lo aceptado en los automatas de keywords
+                        //Si es aceptado en uno es cambiado el ident
+                        //Si no solo se prosigue
+                        contA = 0;
+                        while (contA < this.AFNSKeys.size())
+                        {
+                            Automata tempA = this.AFNSKeys.get(contA);
+                            SimulacionAFN simu = new SimulacionAFN(tempA,temp);
+                            if (simu.Simular())
+                            {
+                                this.res.remove(this.res.size()-1);
+                                this.res.add(temp+" = "+this.keys.get(contA));
+                                contA=this.AFNS.size();
+                            }
+                            else
+                                contA++;
+                        }
+                    }
+                        
+                    //Reseteamos nuestros valores de los ArrayList
+                    i=0;
+                    for (Automata AFNS1 : this.AFNS) 
+                    {
+                        this.lasts.set(i,-1);
+                        this.flags.set(i,false);
+                        i++;
+                    }
+                }
+                //Si logro ser simulado copiamos al index inicial el ultimo index leido
+                else
+                    index=index2;         
+            }
+            //Reseteamos contador de automatas
+            contA=0;
+        } 
     }
     
 }

@@ -46,7 +46,7 @@ public class Compilador {
         /********************************************************************/
         /********************************************************************/
         /********************************************************************/
-          
+        
         System.out.println("Ingrese el nombre del archivo con la especificación léxica en Cocol(CocoR.txt): ");
         Scanner input = new Scanner(System.in);
         String txtfile = input.nextLine(); //CocoR.txt

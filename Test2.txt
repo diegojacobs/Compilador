@@ -12,14 +12,14 @@ CHARACTERS
   digit         = '0' + nonZeroDigit .
   hexDigit      = digit + "ABCDEFabcdef" .
   letter        = 'A' .. 'Z' + 'a' .. 'z' + '_' + '$'.
-  ANY           = letter + digit + "#!¡¿%/=¸;:,€<>¨{}[]^~·½-_)(*.|+?$\\'\"".
+  ANY           = letter + digit + "#!%/=;:,<>{}[]^~-_)(*.|+?$\\'\"".
   char          = ANY - "'" - '\\' - cr - lf.
   stringChar    = ANY - "\"" - '\\' - cr - lf.
   
 KEYWORDS
   boolean = "boolean".
   byte    = "byte".
-  char    = "char".
+  char2    = "char".
   class   = "class".
   double  = "double".
   false   = "false".

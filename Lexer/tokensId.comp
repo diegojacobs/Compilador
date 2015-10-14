@@ -1,6 +1,6 @@
-id
-number
-hexnumber
-hola
-IGNORE
+ident
+intLit
+floatLit
+stringLit
+charLit
 IGNORE

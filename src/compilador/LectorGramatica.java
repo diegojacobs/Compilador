@@ -56,7 +56,7 @@ public class LectorGramatica {
     //Vocabulario de Cocol
     private final String letter = "四a少b少c少d少e少f少g少h少i少j少k少l少m少n少ñ少o少p少q少r少s少t少u少v少w少x少y少z少A少B少C少D少E少F少G少H少I少J少K少L少M少N少Ñ少O少P少Q少R少S少T少U少V少W少X少Y少Z枼";
     private final String digit = "四0少1少2少3少4少5少6少7少8少9枼";
-    private final String any = "四"+letter+"少"+digit+"少 少#少!少¡少¿少%少/少=少¸少;少:少,少€少<少>少¨少{少}少[少]少^少~少·少½少-少_少)少(少*少.少|少+少?少$少\\少'少\"枼";
+    private final String any = "四"+letter+"少"+digit+"少 少@少#少!少¡少¿少%少/少=少¸少;少:少,少€少<少>少¨少{少}少[少]少^少~少·少½少-少_少)少(少*少.少|少+少?少$少\\少'少\"枼";
     private final String ident = letter + "四"+letter+"少"+digit+"枼砂";
     private final String number = digit+"四"+digit+"枼砂";
     private final String string = "四"+any+"枼砂";
@@ -761,7 +761,7 @@ public class LectorGramatica {
                     int tempindex = this.lastindex;
                     if(checkString("..",expr.substring(this.lastindex)))
                     {
-                        if (Char(expr,this.lastindex+1))
+                        if (Char(expr,this.lastindex))
                         {
                             String cadena = this.equal.substring(indexequal);
                             String temp = convertChar(cadena);
@@ -798,7 +798,7 @@ public class LectorGramatica {
         else
             if (checkString("CHR",expr.substring(this.lastindex)))
             {
-                index = this.lastindex+2;
+                index = this.lastindex+1;
                 if (number(expr))
                 {
                     this.equal += saveCHR(expr.substring(index, this.lastindex-1));
@@ -1188,7 +1188,14 @@ public class LectorGramatica {
     private String saveCHR(String cadena)
     {
         String temp = "四";
-        char c = (char)Integer.parseInt(cadena);
+        char c;
+        if (cadena.equals("13") || cadena.equals("8"))//Carriage Return
+            c = '中';
+        else
+            if (cadena.equals("10"))//Cambio de linea
+                c = '文';
+        else
+            c = (char)Integer.parseInt(cadena);
         temp += c+"枼";
         return temp;
     }
@@ -1283,6 +1290,19 @@ public class LectorGramatica {
             else
                 temp3 += temp2.charAt(i);
         }
-        this.equal = temp3;
+        
+        temp = new String();
+        for (int i=0;i<temp3.length();i++)
+        {
+            if (temp3.charAt(i) == '少')
+                if (temp3.charAt(i-1) == '四' || temp3.charAt(i+1) == '枼' || temp3.charAt(i-1) == '少' || temp3.charAt(i+1) == '少')
+                    temp=temp;
+                else
+                    temp+=temp3.charAt(i);
+            else
+                temp+=temp3.charAt(i);
+                    
+        }
+        this.equal = temp;
     }
 }

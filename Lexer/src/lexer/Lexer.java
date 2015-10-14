@@ -71,6 +71,13 @@ public class Lexer {
         System.out.println("Resultado: ");
         for (String res :lp.getRes())
             System.out.println(res);
+        
+        /*
+        lp.check(ar.getText());
+        System.out.println("Resultado: ");
+        for (String res :lp.getRes())
+            System.out.println(res);
+        */
     }
     
 }
